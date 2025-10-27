@@ -80,5 +80,12 @@ echo %GREEN%📚 Documentation:%NC%
 echo - Quick Start: QUICK_START.md
 echo - Technical Stack: TECHNICAL_STACK.md
 echo - Production Deployment: docs/production-deployment.md
+echo.
+echo %RED%⚠️  GitHub Permission Issue:%NC%
+echo %YELLOW%If you got a permission error, you need to:%NC%
+echo 1. Check GitHub username in the remote URL
+echo 2. Ensure you have push access to the repository
+echo 3. Try pushing to your own fork first
+echo 4. Contact repository owner if needed
 
 pause
