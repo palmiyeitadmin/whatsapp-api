@@ -18,7 +18,8 @@
     "test:load": "k6 run tests/load/k6-config.js",
     "lint": "eslint functions/**/*.js public/**/*.js",
     "lint:fix": "eslint functions/**/*.js public/**/*.js --fix",
-    "git:push": "bash scripts/deploy.sh"
+    "git:push": "bash scripts/deploy.sh",
+    "git:push:windows": "scripts/deploy.bat"
   },
   "keywords": [
     "cloudflare",

@@ -6,8 +6,15 @@ This guide will help you push the CF-Infobip Broadcaster project to GitHub.
 
 ### Method 1: Using the Deployment Script (Recommended)
 
+#### For Windows:
 ```bash
-# Run the deployment script
+# Run the Windows deployment script
+npm run git:push:windows
+```
+
+#### For Linux/Mac:
+```bash
+# Run the Unix/Linux deployment script
 npm run git:push
 ```
 
