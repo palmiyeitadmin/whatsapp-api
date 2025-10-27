@@ -1,0 +1,31 @@
+name = "cf-infobip-broadcaster"
+compatibility_date = "2023-12-01"
+
+[env.production]
+name = "cf-infobip-broadcaster"
+
+[env.staging]
+name = "cf-infobip-broadcaster-staging"
+
+[env.development]
+name = "cf-infobip-broadcaster-dev"
+
+# D1 Database binding
+[[d1_databases]]
+binding = "CF_INFOBIP_DB"
+database_name = "cf-infobip-db"
+database_id = "your-database-id-here"
+
+# Environment variables
+[vars]
+GOOGLE_CLIENT_ID = ""
+GOOGLE_CLIENT_SECRET = ""
+INFOBIP_API_KEY = ""
+INFOBIP_BASE_URL = "https://api.infobip.com"
+INFOBIP_WHATSAPP_SENDER = ""
+JWT_SECRET = "your-jwt-secret-here"
+
+# KV namespace for sessions (optional alternative to JWT)
+# [[kv_namespaces]]
+# binding = "SESSIONS"
+# id = "your-kv-namespace-id"

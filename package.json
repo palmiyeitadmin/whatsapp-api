@@ -1,0 +1,46 @@
+{
+  "name": "cf-infobip-broadcaster",
+  "version": "1.0.0",
+  "description": "A serverless WhatsApp bulk messaging application running on Cloudflare Pages with Google Contacts synchronization and Infobip API integration",
+  "main": "index.js",
+  "scripts": {
+    "dev": "wrangler pages dev public --compatibility-date=2023-12-01",
+    "deploy": "wrangler pages deploy public",
+    "deploy:staging": "wrangler pages deploy public --env staging",
+    "deploy:production": "wrangler pages deploy public --env production",
+    "db:migrate": "wrangler d1 execute CF_INFOBIP_DB --file=./db/schema.sql",
+    "db:local": "wrangler d1 execute CF_INFOBIP_DB --local --file=./db/schema.sql",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "test:coverage": "vitest --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:load": "k6 run tests/load/k6-config.js",
+    "lint": "eslint functions/**/*.js public/**/*.js",
+    "lint:fix": "eslint functions/**/*.js public/**/*.js --fix",
+    "git:push": "bash scripts/deploy.sh"
+  },
+  "keywords": [
+    "cloudflare",
+    "whatsapp",
+    "infobip",
+    "serverless",
+    "messaging"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^3.0.0",
+    "@cloudflare/workers-types": "^4.0.0",
+    "vitest": "^1.0.0",
+    "@vitest/coverage-v8": "^1.0.0",
+    "playwright": "^1.40.0",
+    "@playwright/test": "^1.40.0",
+    "k6": "^0.45.0",
+    "eslint": "^8.55.0",
+    "eslint-config-standard": "^17.1.0"
+  },
+  "dependencies": {
+    "googleapis": "^128.0.0"
+  }
+}
