@@ -46,7 +46,8 @@ function setupEventListeners() {
     googleSigninBtn?.addEventListener('click', initiateGoogleAuth);
     
     // Dashboard buttons
-    document.getElementById('manage-contacts-btn')?.addEventListener('click', () => {
+    document.getElementById('manage-contacts-btn')?.addEventListener('click', (e) => {
+        e.preventDefault();
         showNotification('Contacts management coming soon!', 'info');
     });
     
@@ -69,7 +70,10 @@ function setupEventListeners() {
     });
 
     // Contacts management
-    importContactsBtn?.addEventListener('click', importContacts);
+    importContactsBtn?.addEventListener('click', (e) => {
+        e.preventDefault();
+        importContacts();
+    });
     selectAllContactsBtn?.addEventListener('click', selectAllContacts);
     deselectAllContactsBtn?.addEventListener('click', deselectAllContacts);
     contactsSearch?.addEventListener('input', handleSearch);
