@@ -175,7 +175,14 @@ whatsapp-api/
 - **Display**: Scrollable list (max-height: 500px) with custom scrollbar
 - **Data**: Name, phone number, email
 
-### 4. Message Composition
+### 4. Manual Contact Addition
+- **Add Contact Button**: Easily accessible in the contacts panel
+- **Modal Form**: User-friendly interface for entering contact information
+- **Validation**: Phone number validation with error handling
+- **Duplicate Detection**: Prevents adding contacts with duplicate phone numbers
+- **Immediate Refresh**: Contact list updates automatically after adding
+
+### 5. Message Composition
 - **WhatsApp Formatting**:
   - `*text*` → Bold
   - `_text_` → Italic
@@ -351,6 +358,7 @@ CREATE UNIQUE INDEX idx_contacts_unique ON contacts(user_google_id, google_conta
 | POST | `/api/auth/logout` | Clear session | - | `{success: true}` + clear cookie |
 | GET | `/api/dashboard/stats` | Get dashboard counts | - | `{contacts: N, campaigns: N, messages: N}` |
 | GET | `/api/contacts/list` | List contacts | `?page=1&limit=10&search=query` | `{success: true, data: [...], pagination: {...}}` |
+| POST | `/api/contacts/create` | Add new contact | `{name, phone_number, email}` | `{success: true, contact: {...}}` |
 | POST | `/api/contacts/import` | Import from Google | - | `{success: true, imported: N, updated: N, total: N}` |
 
 ### Request Examples
@@ -376,6 +384,33 @@ Response:
     "limit": 10,
     "total": 499,
     "totalPages": 50
+  }
+}
+```
+
+#### Create Contact
+```javascript
+POST /api/contacts/create
+Cookie: session=<jwt_token>
+
+Request Body:
+{
+  "name": "John Doe",
+  "phone_number": "+905551234567",
+  "email": "john@example.com"
+}
+
+Response:
+{
+  "success": true,
+  "contact": {
+    "id": 123,
+    "name": "John Doe",
+    "phone_number": "+905551234567",
+    "email": "john@example.com",
+    "google_contact_id": null,
+    "created_at": "2025-10-28T20:15:30.000Z",
+    "updated_at": "2025-10-28T20:15:30.000Z"
   }
 }
 ```
@@ -517,6 +552,10 @@ HTTP Status Codes:
 | `loadDashboardData()` | Fetch stats for cards | app.js:105 |
 | `loadContacts(search, page, append)` | Fetch contacts with pagination | app.js:134 |
 | `importContacts()` | Trigger Google import | app.js:280 |
+| `showAddContactModal()` | Show the Add Contact modal form | app.js:692 |
+| `hideAddContactModal()` | Hide the Add Contact modal form | app.js:698 |
+| `saveContact()` | Save a new contact from the modal form | app.js:700 |
+| `showContactFormError()` | Show error message in the contact form | app.js:724 |
 | `selectAllContacts()` | Select all visible contacts | app.js:227 |
 | `deselectAllContacts()` | Clear all selections | app.js:238 |
 | `toggleContactSelection(id)` | Toggle single contact checkbox | app.js:218 |
