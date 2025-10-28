@@ -104,19 +104,25 @@ async function importContactsFromGoogle(accessToken, userId, env) {
         // Get all google_contact_ids for this batch
         const googleContactIds = parsedContacts.map(c => c.googleContactId);
 
-        // Build a single query to check existing contacts
-        const placeholders = googleContactIds.map(() => '?').join(',');
-        const existingContactsResult = await env.CF_INFOBIP_DB.prepare(`
-            SELECT id, google_contact_id
-            FROM contacts
-            WHERE user_google_id = ? AND google_contact_id IN (${placeholders})
-        `).bind(userId, ...googleContactIds).all();
-
+        // Check existing contacts in chunks to avoid SQL variable limit (999)
         const existingContactsMap = new Map();
-        if (existingContactsResult.results) {
-            existingContactsResult.results.forEach(row => {
-                existingContactsMap.set(row.google_contact_id, row.id);
-            });
+        const CHECK_BATCH_SIZE = 500; // Safe limit for IN clause
+
+        for (let i = 0; i < googleContactIds.length; i += CHECK_BATCH_SIZE) {
+            const chunk = googleContactIds.slice(i, i + CHECK_BATCH_SIZE);
+            const placeholders = chunk.map(() => '?').join(',');
+
+            const existingContactsResult = await env.CF_INFOBIP_DB.prepare(`
+                SELECT id, google_contact_id
+                FROM contacts
+                WHERE user_google_id = ? AND google_contact_id IN (${placeholders})
+            `).bind(userId, ...chunk).all();
+
+            if (existingContactsResult.results) {
+                existingContactsResult.results.forEach(row => {
+                    existingContactsMap.set(row.google_contact_id, row.id);
+                });
+            }
         }
 
         // Prepare batch operations using INSERT OR REPLACE (upsert)
