@@ -156,31 +156,31 @@ function renderContactsList(contacts, pagination) {
         return;
     }
 
-    const contactsHTML = contacts.map(contact => `
-        <div class="flex items-center p-2 hover:bg-gray-50 rounded">
+    const contactsHTML = `<ul class="space-y-3">` + contacts.map(contact => `
+        <li class="flex items-start space-x-3 p-2 rounded-md hover:bg-background-main">
             <input type="checkbox"
                    id="contact-${contact.id}"
                    value="${contact.id}"
-                   class="mr-3 contact-checkbox"
+                   class="form-checkbox h-5 w-5 text-primary rounded mt-1 border-border-color bg-surface focus:ring-accent contact-checkbox"
                    ${selectedContacts.has(contact.id) ? 'checked' : ''}
                    onchange="toggleContactSelection(${contact.id})">
             <label for="contact-${contact.id}" class="flex-1 cursor-pointer">
-                <div class="font-medium text-gray-900">${contact.name || 'Unknown'}</div>
-                <div class="text-sm text-gray-500">${contact.phone_number}</div>
-                ${contact.email ? `<div class="text-xs text-gray-400">${contact.email}</div>` : ''}
+                <p class="font-medium">${contact.name || 'Unknown'}</p>
+                <p class="text-sm text-text-secondary">${contact.phone_number}</p>
+                ${contact.email ? `<p class="text-xs text-text-secondary">${contact.email}</p>` : ''}
             </label>
-        </div>
-    `).join('');
+        </li>
+    `).join('') + `</ul>`;
 
     // Add Load More button if there are more pages
     const loadMoreHTML = pagination && pagination.page < pagination.totalPages ? `
         <div class="mt-4 text-center">
-            <button onclick="loadMoreContacts()" class="w-full py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-700">
+            <button onclick="loadMoreContacts()" class="w-full py-2 px-4 bg-primary text-white font-medium rounded-lg hover:opacity-90">
                 Load More (${contacts.length} of ${pagination.total})
             </button>
         </div>
     ` : pagination ? `
-        <div class="mt-4 text-center text-sm text-gray-500">
+        <div class="mt-4 text-center text-sm text-text-secondary">
             Showing all ${pagination.total} contacts
         </div>
     ` : '';
@@ -398,8 +398,8 @@ function escapeHtml(text) {
 function updateAuthContainer(authenticated) {
     if (authenticated && currentUser) {
         authContainer.innerHTML = `
-            <span class="text-gray-700">Welcome, ${currentUser.name || currentUser.email}</span>
-            <button id="logout-btn" class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded">
+            <span class="text-sm text-text-secondary">Welcome, ${currentUser.name || currentUser.email}</span>
+            <button id="logout-btn" class="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg text-sm transition-colors">
                 Logout
             </button>
         `;

@@ -3,220 +3,253 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CF-Infobip Broadcaster</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/styles.css">
+    <title>Palmiye Broadcaster</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#131d27",
+                        accent: "#f6e354",
+                        "background-main": "#F8F9FA",
+                        "surface": "#ffffff",
+                        "text-primary": "#131d27",
+                        "text-secondary": "#6C757D",
+                        "border-color": "#E0E0E0",
+                    },
+                    fontFamily: {
+                        sans: ["Roboto", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.5rem",
+                    },
+                },
+            },
+        };
+    </script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #a0aec0;
+            border-radius: 10px;
+        }
+    </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
-    <!-- Header -->
-    <header class="bg-white shadow">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <h1 class="text-xl font-semibold text-gray-900">CF-Infobip Broadcaster</h1>
-                </div>
-                <div class="flex items-center">
+<body class="bg-background-main font-sans text-text-primary">
+    <div class="min-h-screen">
+        <!-- Header -->
+        <header class="bg-surface shadow-sm border-b border-border-color">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center space-x-3">
+                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCnSfKWJ5tK6J3TtOXm5JZe0hsV1OU0f2YLaz6eQUD9xjzPgdkreUQmB4OdppjB2dNXgcYaJaGpqitHhSIbD61bo3U3aEYPrZ2jrZKz6p-zbq92XlYC_2YQdvYZS9ZxCBmdqgIcBgLdrO3QFa4DwZjEu8YuBzqkltwfhOfHnsYx1HBuM2tNLUYBUPN-LJwPDgqQHPm_VZsyky8Fva9kY1_EDP8SN1mZGhoJa6Uw55gmxJaTgm997tNYYwKyk89KiLVw5MQJKE7m7RPf" alt="Palmiye logo" class="h-8 w-auto">
+                        <h1 class="text-xl font-bold text-text-primary">Infobip Broadcaster</h1>
+                    </div>
                     <div id="auth-container" class="flex items-center space-x-4">
-                        <!-- Auth buttons will be inserted here -->
+                        <!-- Auth content will be inserted here -->
                     </div>
                 </div>
             </div>
-        </div>
-    </header>
+        </header>
 
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <!-- Login Section -->
-        <div id="login-section" class="hidden">
-            <div class="flex justify-center items-center h-96">
-                <div class="text-center">
-                    <h2 class="text-2xl font-bold text-gray-900 mb-4">Welcome to CF-Infobip Broadcaster</h2>
-                    <p class="text-gray-600 mb-6">Sign in with your Google account to get started</p>
-                    <button id="google-signin-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg flex items-center mx-auto">
-                        <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24">
-                            <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                            <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                            <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                            <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                        </svg>
-                        Sign in with Google
-                    </button>
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Login Section -->
+            <div id="login-section" class="hidden">
+                <div class="flex justify-center items-center h-96">
+                    <div class="text-center bg-surface p-12 rounded-lg shadow-sm border border-border-color">
+                        <h2 class="text-2xl font-bold text-text-primary mb-4">Welcome to Palmiye Infobip Broadcaster</h2>
+                        <p class="text-text-secondary mb-6">Sign in with your Google account to get started</p>
+                        <button id="google-signin-btn" class="bg-primary hover:opacity-90 text-white font-bold py-3 px-6 rounded-lg flex items-center mx-auto transition-opacity">
+                            <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24">
+                                <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                                <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                                <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                                <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                            </svg>
+                            Sign in with Google
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Dashboard Section -->
-        <div id="dashboard-section" class="hidden">
-            <div class="px-4 py-6 sm:px-0">
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="hidden">
                 <!-- Stats Cards -->
-                <div class="mb-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <!-- Contacts Card -->
-                    <div class="bg-white overflow-hidden shadow rounded-lg">
-                        <div class="p-5">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0">
-                                    <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                                    </svg>
-                                </div>
-                                <div class="ml-5 w-0 flex-1">
-                                    <dl>
-                                        <dt class="text-sm font-medium text-gray-500 truncate">Total Contacts</dt>
-                                        <dd class="text-lg font-medium text-gray-900" id="total-contacts">0</dd>
-                                    </dl>
-                                </div>
+                    <div class="bg-surface p-6 rounded-lg shadow-sm border border-border-color flex flex-col">
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="p-3 bg-accent/20 rounded-full">
+                                <span class="material-icons-outlined text-primary">group</span>
+                            </div>
+                            <div>
+                                <p class="text-sm text-text-secondary">Total Contacts</p>
+                                <p class="text-2xl font-bold" id="total-contacts">0</p>
                             </div>
                         </div>
-                        <div class="bg-gray-50 px-5 py-3">
-                            <div class="text-sm">
-                                <button id="import-contacts-btn" class="font-medium text-blue-700 hover:text-blue-900 mr-4">Import Contacts</button>
-                                <button id="manage-contacts-btn" class="font-medium text-blue-700 hover:text-blue-900">Manage</button>
-                            </div>
+                        <div class="mt-auto pt-4 flex space-x-4 text-sm font-medium">
+                            <a href="#" id="import-contacts-btn" class="text-primary hover:underline">Import Contacts</a>
+                            <a href="#" id="manage-contacts-btn" class="text-primary hover:underline">Manage</a>
                         </div>
                     </div>
 
                     <!-- Campaigns Card -->
-                    <div class="bg-white overflow-hidden shadow rounded-lg">
-                        <div class="p-5">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0">
-                                    <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                    </svg>
-                                </div>
-                                <div class="ml-5 w-0 flex-1">
-                                    <dl>
-                                        <dt class="text-sm font-medium text-gray-500 truncate">Total Campaigns</dt>
-                                        <dd class="text-lg font-medium text-gray-900" id="total-campaigns">0</dd>
-                                    </dl>
-                                </div>
+                    <div class="bg-surface p-6 rounded-lg shadow-sm border border-border-color flex flex-col">
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="p-3 bg-accent/20 rounded-full">
+                                <span class="material-icons-outlined text-primary">campaign</span>
+                            </div>
+                            <div>
+                                <p class="text-sm text-text-secondary">Total Campaigns</p>
+                                <p class="text-2xl font-bold" id="total-campaigns">0</p>
                             </div>
                         </div>
-                        <div class="bg-gray-50 px-5 py-3">
-                            <div class="text-sm">
-                                <button id="create-campaign-btn" class="font-medium text-blue-700 hover:text-blue-900 mr-4">Create</button>
-                                <button id="manage-campaigns-btn" class="font-medium text-blue-700 hover:text-blue-900">Manage</button>
-                            </div>
+                        <div class="mt-auto pt-4 flex space-x-4 text-sm font-medium">
+                            <a href="#" id="create-campaign-btn" class="text-primary hover:underline">Create</a>
+                            <a href="#" id="manage-campaigns-btn" class="text-primary hover:underline">Manage</a>
                         </div>
                     </div>
 
-                    <!-- Messages Sent Card -->
-                    <div class="bg-white overflow-hidden shadow rounded-lg">
-                        <div class="p-5">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0">
-                                    <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                                    </svg>
-                                </div>
-                                <div class="ml-5 w-0 flex-1">
-                                    <dl>
-                                        <dt class="text-sm font-medium text-gray-500 truncate">Messages Sent</dt>
-                                        <dd class="text-lg font-medium text-gray-900" id="total-messages">0</dd>
-                                    </dl>
-                                </div>
+                    <!-- Messages Card -->
+                    <div class="bg-surface p-6 rounded-lg shadow-sm border border-border-color flex flex-col">
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="p-3 bg-accent/20 rounded-full">
+                                <span class="material-icons-outlined text-primary">send</span>
+                            </div>
+                            <div>
+                                <p class="text-sm text-text-secondary">Messages Sent</p>
+                                <p class="text-2xl font-bold" id="total-messages">0</p>
                             </div>
                         </div>
-                        <div class="bg-gray-50 px-5 py-3">
-                            <div class="text-sm">
-                                <button id="send-message-btn" class="font-medium text-blue-700 hover:text-blue-900 mr-4">Send Message</button>
-                                <button id="view-logs-btn" class="font-medium text-blue-700 hover:text-blue-900">View Logs</button>
-                            </div>
+                        <div class="mt-auto pt-4 flex space-x-4 text-sm font-medium">
+                            <a href="#" id="send-message-btn" class="text-primary hover:underline">Send Message</a>
+                            <a href="#" id="view-logs-btn" class="text-primary hover:underline">View Logs</a>
                         </div>
                     </div>
                 </div>
 
-                <!-- Main Messaging Interface -->
+                <!-- Main Content Grid -->
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <!-- Contacts Panel -->
-                    <div class="lg:col-span-1">
-                        <div class="bg-white shadow rounded-lg">
-                            <div class="px-4 py-5 sm:p-6">
-                                <div class="flex justify-between items-center mb-4">
-                                    <h3 class="text-lg leading-6 font-medium text-gray-900">Contacts</h3>
-                                    <div class="flex space-x-2">
-                                        <button id="select-all-contacts" class="text-sm text-blue-600 hover:text-blue-800">Select All</button>
-                                        <button id="deselect-all-contacts" class="text-sm text-gray-600 hover:text-gray-800">Deselect All</button>
-                                    </div>
-                                </div>
-                                
-                                <!-- Search -->
-                                <div class="mb-4">
-                                    <input type="text" id="contacts-search" placeholder="Search contacts..."
-                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                                </div>
-                                
-                                <!-- Contacts List -->
-                                <div id="contacts-list" class="space-y-2 max-h-96 overflow-y-auto">
-                                    <div class="text-center text-gray-500 py-8">
-                                        <div class="spinner mx-auto mb-4"></div>
-                                        <p>Loading contacts...</p>
-                                    </div>
-                                </div>
+                    <div class="lg:col-span-1 bg-surface p-6 rounded-lg shadow-sm border border-border-color flex flex-col">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-lg font-bold">Contacts</h2>
+                            <div class="text-sm space-x-3">
+                                <button id="select-all-contacts" class="text-primary font-medium hover:underline">Select All</button>
+                                <button id="deselect-all-contacts" class="text-text-secondary font-medium hover:underline">Deselect All</button>
+                            </div>
+                        </div>
+
+                        <!-- Search -->
+                        <div class="relative mb-4">
+                            <input type="text" id="contacts-search" placeholder="Search contacts..."
+                                   class="w-full pl-10 pr-4 py-2 border border-border-color rounded-md bg-background-main focus:ring-accent focus:border-accent">
+                            <span class="material-icons-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary">search</span>
+                        </div>
+
+                        <!-- Tabs -->
+                        <div class="border-b border-border-color mb-4">
+                            <nav class="flex space-x-4" aria-label="Tabs">
+                                <a href="#" class="text-primary border-b-2 border-accent px-3 py-2 text-sm font-medium" aria-current="page">
+                                    All Contacts
+                                </a>
+                                <a href="#" class="text-text-secondary hover:text-text-primary hover:border-b-2 hover:border-border-color px-3 py-2 text-sm font-medium">
+                                    Groups
+                                </a>
+                                <a href="#" class="text-text-secondary hover:text-text-primary hover:border-b-2 hover:border-border-color px-3 py-2 text-sm font-medium">
+                                    Recent
+                                </a>
+                            </nav>
+                        </div>
+
+                        <!-- Contacts List -->
+                        <div id="contacts-list" class="flex-grow overflow-y-auto custom-scrollbar -mr-3 pr-3">
+                            <div class="text-center text-text-secondary py-8">
+                                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4"></div>
+                                <p>Loading contacts...</p>
                             </div>
                         </div>
                     </div>
 
                     <!-- Message Composition Panel -->
-                    <div class="lg:col-span-2">
-                        <div class="bg-white shadow rounded-lg">
-                            <div class="px-4 py-5 sm:p-6">
-                                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Compose Message</h3>
-                                
-                                <!-- Selected Contacts Display -->
-                                <div class="mb-4">
-                                    <p class="text-sm text-gray-600 mb-2">
-                                        Selected: <span id="selected-count" class="font-medium">0</span> contacts
-                                    </p>
-                                    <div id="selected-contacts" class="flex flex-wrap gap-2">
-                                        <!-- Selected contacts will be displayed here -->
-                                    </div>
-                                </div>
-                                
-                                <!-- Message Composition -->
-                                <div class="mb-4">
-                                    <label for="message-content" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Message Content
-                                    </label>
-                                    <textarea id="message-content" rows="6"
-                                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                              placeholder="Type your message here..."></textarea>
-                                    <div class="mt-1 text-right">
-                                        <span id="message-count" class="text-sm text-gray-500">0 / 4096 characters</span>
-                                    </div>
-                                </div>
-                                
-                                <!-- Message Preview -->
-                                <div class="mb-4">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                                        Preview
-                                    </label>
-                                    <div id="message-preview" class="p-3 bg-gray-50 rounded-md border border-gray-200 min-h-[100px]">
-                                        <p class="text-gray-500">Message preview will appear here...</p>
-                                    </div>
-                                </div>
-                                
-                                <!-- Action Buttons -->
-                                <div class="flex justify-between">
-                                    <div class="text-sm text-gray-600">
-                                        <p id="send-status"></p>
-                                    </div>
-                                    <div class="space-x-3">
-                                        <button id="clear-message-btn" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
-                                            Clear
-                                        </button>
-                                        <button id="send-message-btn-main" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
-                                            Send Message
-                                        </button>
-                                    </div>
+                    <div class="lg:col-span-2 bg-surface p-6 rounded-lg shadow-sm border border-border-color">
+                        <h2 class="text-lg font-bold mb-1">Compose Message</h2>
+                        <p class="text-sm text-text-secondary mb-4">Selected: <span id="selected-count">0</span> contacts</p>
+
+                        <div class="space-y-6">
+                            <!-- Template Selection -->
+                            <div>
+                                <label for="template-selection" class="block text-sm font-medium mb-1">Template Selection</label>
+                                <div class="relative">
+                                    <select id="template-selection" class="w-full appearance-none border border-border-color rounded-md bg-background-main focus:ring-accent focus:border-accent pl-4 pr-10 py-2">
+                                        <option>No Template</option>
+                                        <option>Welcome Message</option>
+                                        <option>Promotional Offer</option>
+                                        <option>Appointment Reminder</option>
+                                    </select>
+                                    <span class="material-icons-outlined absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary pointer-events-none">expand_more</span>
                                 </div>
                             </div>
+
+                            <!-- Message Content -->
+                            <div>
+                                <label for="message-content" class="block text-sm font-medium mb-1">Message Content</label>
+                                <div class="relative">
+                                    <textarea id="message-content" rows="6" placeholder="Type your message here..."
+                                              class="w-full border border-border-color rounded-md bg-background-main focus:ring-accent focus:border-accent"></textarea>
+                                    <p class="absolute bottom-2 right-3 text-xs text-text-secondary"><span id="message-count">0</span> / 4096 characters</p>
+                                </div>
+                            </div>
+
+                            <!-- Preview -->
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <label for="message-preview" class="block text-sm font-medium">Preview</label>
+                                    <div class="flex items-center space-x-1 border border-border-color rounded-md p-1 bg-background-main">
+                                        <button class="p-1.5 rounded hover:bg-gray-200 text-text-secondary hover:text-text-primary">
+                                            <span class="material-icons-outlined text-base">format_bold</span>
+                                        </button>
+                                        <button class="p-1.5 rounded hover:bg-gray-200 text-text-secondary hover:text-text-primary">
+                                            <span class="material-icons-outlined text-base">format_italic</span>
+                                        </button>
+                                        <button class="p-1.5 rounded hover:bg-gray-200 text-text-secondary hover:text-text-primary">
+                                            <span class="material-icons-outlined text-base">format_underlined</span>
+                                        </button>
+                                        <div class="w-px h-5 bg-border-color mx-1"></div>
+                                        <button class="p-1.5 rounded hover:bg-gray-200 text-text-secondary hover:text-text-primary">
+                                            <span class="material-icons-outlined text-base">sentiment_satisfied</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div id="message-preview" class="w-full p-4 border border-dashed border-border-color rounded-md bg-background-main min-h-[80px]">
+                                    <p class="text-text-secondary italic">Message preview will appear here...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="mt-8 flex justify-end items-center space-x-3">
+                            <button id="clear-message-btn" class="px-6 py-2.5 bg-gray-200 text-text-primary font-bold rounded-lg hover:bg-gray-300 transition-colors">
+                                Clear
+                            </button>
+                            <button id="send-message-btn-main" class="px-6 py-2.5 bg-primary text-white font-bold rounded-lg hover:opacity-90 transition-opacity">
+                                Send Message
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </main>
+        </main>
+    </div>
 
     <script src="/app.js"></script>
 </body>
