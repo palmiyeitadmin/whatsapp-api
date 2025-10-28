@@ -31,6 +31,8 @@ const sendStatus = document.getElementById('send-status');
 let allContacts = [];
 let selectedContacts = new Set();
 let currentPage = 1;
+let totalPages = 1;
+let totalContacts = 0;
 let searchTimeout;
 
 // Initialize the app
@@ -108,21 +110,27 @@ function showDashboard() {
 }
 
 // Contacts management functions
-async function loadContacts(search = '', page = 1) {
+async function loadContacts(search = '', page = 1, append = false) {
     try {
         const params = new URLSearchParams({
             page: page.toString(),
             limit: '50',
             search: search
         });
-        
+
         const response = await authenticatedFetch(`/api/contacts/list?${params}`);
         const data = await response.json();
-        
+
         if (data.success) {
-            allContacts = data.data;
+            if (append) {
+                allContacts = [...allContacts, ...data.data];
+            } else {
+                allContacts = data.data;
+            }
             currentPage = data.pagination.page;
-            renderContactsList(allContacts);
+            totalPages = data.pagination.totalPages;
+            totalContacts = data.pagination.total;
+            renderContactsList(allContacts, data.pagination);
         } else {
             throw new Error(data.error || 'Failed to load contacts');
         }
@@ -137,7 +145,7 @@ async function loadContacts(search = '', page = 1) {
     }
 }
 
-function renderContactsList(contacts) {
+function renderContactsList(contacts, pagination) {
     if (contacts.length === 0) {
         contactsList.innerHTML = `
             <div class="text-center text-gray-500 py-8">
@@ -147,8 +155,8 @@ function renderContactsList(contacts) {
         `;
         return;
     }
-    
-    contactsList.innerHTML = contacts.map(contact => `
+
+    const contactsHTML = contacts.map(contact => `
         <div class="flex items-center p-2 hover:bg-gray-50 rounded">
             <input type="checkbox"
                    id="contact-${contact.id}"
@@ -163,6 +171,27 @@ function renderContactsList(contacts) {
             </label>
         </div>
     `).join('');
+
+    // Add Load More button if there are more pages
+    const loadMoreHTML = pagination && pagination.page < pagination.totalPages ? `
+        <div class="mt-4 text-center">
+            <button onclick="loadMoreContacts()" class="w-full py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-700">
+                Load More (${contacts.length} of ${pagination.total})
+            </button>
+        </div>
+    ` : pagination ? `
+        <div class="mt-4 text-center text-sm text-gray-500">
+            Showing all ${pagination.total} contacts
+        </div>
+    ` : '';
+
+    contactsList.innerHTML = contactsHTML + loadMoreHTML;
+}
+
+function loadMoreContacts() {
+    const nextPage = currentPage + 1;
+    const searchValue = contactsSearch?.value || '';
+    loadContacts(searchValue, nextPage, true);
 }
 
 function toggleContactSelection(contactId) {
