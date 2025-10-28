@@ -93,34 +93,57 @@ async function importContactsFromGoogle(accessToken, userId, env) {
         const data = await contactsResponse.json();
         const contacts = data.connections || [];
         total += contacts.length;
-        
-        // Process each contact
-        for (const contact of contacts) {
-            const contactData = parseGoogleContact(contact);
-            
-            if (contactData.phoneNumber) {
-                // Check if contact already exists
-                const existingContact = await env.CF_INFOBIP_DB.prepare(`
-                    SELECT id FROM contacts 
-                    WHERE user_google_id = ? AND google_contact_id = ?
-                `).bind(userId, contactData.googleContactId).first();
-                
-                if (existingContact) {
-                    // Update existing contact
-                    await env.CF_INFOBIP_DB.prepare(`
-                        UPDATE contacts 
+
+        // Parse all contacts
+        const parsedContacts = contacts
+            .map(contact => parseGoogleContact(contact))
+            .filter(contact => contact.phoneNumber);
+
+        if (parsedContacts.length === 0) continue;
+
+        // Get all google_contact_ids for this batch
+        const googleContactIds = parsedContacts.map(c => c.googleContactId);
+
+        // Build a single query to check existing contacts
+        const placeholders = googleContactIds.map(() => '?').join(',');
+        const existingContactsResult = await env.CF_INFOBIP_DB.prepare(`
+            SELECT id, google_contact_id
+            FROM contacts
+            WHERE user_google_id = ? AND google_contact_id IN (${placeholders})
+        `).bind(userId, ...googleContactIds).all();
+
+        const existingContactsMap = new Map();
+        if (existingContactsResult.results) {
+            existingContactsResult.results.forEach(row => {
+                existingContactsMap.set(row.google_contact_id, row.id);
+            });
+        }
+
+        // Prepare batch operations using INSERT OR REPLACE (upsert)
+        const batchStatements = [];
+
+        for (const contactData of parsedContacts) {
+            const existingId = existingContactsMap.get(contactData.googleContactId);
+
+            if (existingId) {
+                // Update existing contact
+                batchStatements.push(
+                    env.CF_INFOBIP_DB.prepare(`
+                        UPDATE contacts
                         SET name = ?, phone_number = ?, email = ?, updated_at = CURRENT_TIMESTAMP
                         WHERE id = ?
                     `).bind(
                         contactData.name,
                         contactData.phoneNumber,
                         contactData.email,
-                        existingContact.id
-                    ).run();
-                    updated++;
-                } else {
-                    // Insert new contact
-                    await env.CF_INFOBIP_DB.prepare(`
+                        existingId
+                    )
+                );
+                updated++;
+            } else {
+                // Insert new contact
+                batchStatements.push(
+                    env.CF_INFOBIP_DB.prepare(`
                         INSERT INTO contacts (user_google_id, name, phone_number, email, google_contact_id)
                         VALUES (?, ?, ?, ?, ?)
                     `).bind(
@@ -129,10 +152,17 @@ async function importContactsFromGoogle(accessToken, userId, env) {
                         contactData.phoneNumber,
                         contactData.email,
                         contactData.googleContactId
-                    ).run();
-                    imported++;
-                }
+                    )
+                );
+                imported++;
             }
+        }
+
+        // Execute batch (max 100 statements per batch in D1)
+        const BATCH_SIZE = 100;
+        for (let i = 0; i < batchStatements.length; i += BATCH_SIZE) {
+            const batch = batchStatements.slice(i, i + BATCH_SIZE);
+            await env.CF_INFOBIP_DB.batch(batch);
         }
         
         // Get next page token
