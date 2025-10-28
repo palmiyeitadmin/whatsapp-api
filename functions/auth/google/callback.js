@@ -47,7 +47,7 @@ export async function onRequestGet(context) {
                 client_secret: env.GOOGLE_CLIENT_SECRET,
                 code,
                 grant_type: 'authorization_code',
-                redirect_uri: `${new URL(request.url).origin}/functions/auth/google/callback`,
+                redirect_uri: `${new URL(request.url).origin}/auth/google/callback`,
             }),
         });
         
@@ -83,10 +83,22 @@ export async function onRequestGet(context) {
         const sessionToken = await createSessionToken(id, email, env.JWT_SECRET);
         
         // Set session cookie and redirect to dashboard
-        return new Response(null, {
-            status: 302,
+        const baseUrl = new URL(request.url).origin;
+        return new Response(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta http-equiv="refresh" content="0; url=${baseUrl}/">
+                <script>window.location.href = '${baseUrl}/';</script>
+            </head>
+            <body>
+                <p>Redirecting...</p>
+            </body>
+            </html>
+        `, {
+            status: 200,
             headers: {
-                'Location': '/',
+                'Content-Type': 'text/html',
                 'Set-Cookie': [
                     `session=${sessionToken}; HttpOnly; Secure; SameSite=Lax; Max-Age=86400; Path=/`,
                     `state=; HttpOnly; Secure; SameSite=Lax; Max-Age=0; Path=/` // Clear state cookie

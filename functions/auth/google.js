@@ -51,7 +51,7 @@ export async function onRequestGet(context) {
     // Construct Google OAuth URL
     const authUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
     authUrl.searchParams.set('client_id', env.GOOGLE_CLIENT_ID);
-    authUrl.searchParams.set('redirect_uri', `${new URL(request.url).origin}/functions/auth/google/callback`);
+    authUrl.searchParams.set('redirect_uri', `${new URL(request.url).origin}/auth/google/callback`);
     authUrl.searchParams.set('response_type', 'code');
     authUrl.searchParams.set('scope', 'openid email profile https://www.googleapis.com/auth/contacts.readonly');
     authUrl.searchParams.set('state', state);
