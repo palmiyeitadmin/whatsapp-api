@@ -147,19 +147,27 @@ async function createSessionToken(userId, email, secret) {
         ['sign']
     );
     
+    // Base64URL encode (remove padding and make URL-safe)
+    const base64url = (str) => {
+        return btoa(str)
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .replace(/=/g, '');
+    };
+
     const tokenParts = [
-        btoa(JSON.stringify(header)),
-        btoa(JSON.stringify(payload)),
+        base64url(JSON.stringify(header)),
+        base64url(JSON.stringify(payload)),
     ];
-    
+
     const tokenData = tokenParts.join('.');
     const signature = await crypto.subtle.sign(
         'HMAC',
         key,
         encoder.encode(tokenData)
     );
-    
-    const signatureBase64 = btoa(String.fromCharCode(...new Uint8Array(signature)));
-    
+
+    const signatureBase64 = base64url(String.fromCharCode(...new Uint8Array(signature)));
+
     return `${tokenData}.${signatureBase64}`;
 }
