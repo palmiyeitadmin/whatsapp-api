@@ -280,19 +280,22 @@ function removeSelectedContact(contactId) {
 async function importContacts() {
     try {
         showNotification('Importing contacts from Google...', 'info');
-        
+
         const response = await authenticatedFetch('/api/contacts/import', {
             method: 'POST'
         });
-        
+
         const data = await response.json();
-        
+
         if (data.success) {
             showNotification(`Imported ${data.imported} new contacts, updated ${data.updated}`, 'success');
             loadContacts(); // Reload the contacts list
             loadDashboardData(); // Update the count
         } else {
-            throw new Error(data.error || 'Import failed');
+            // Show detailed error message
+            const errorMsg = data.details || data.error || 'Import failed';
+            console.error('Import error details:', data);
+            throw new Error(errorMsg);
         }
     } catch (error) {
         console.error('Import error:', error);
