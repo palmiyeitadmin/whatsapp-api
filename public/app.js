@@ -61,7 +61,13 @@ function setupEventListeners() {
     document.getElementById('view-logs-btn')?.addEventListener('click', () => {
         showNotification('Message logs coming soon!', 'info');
     });
-    
+
+    document.getElementById('send-message-btn')?.addEventListener('click', () => {
+        // Scroll to message composition area
+        document.getElementById('message-content')?.focus();
+        showNotification('Please compose your message below', 'info');
+    });
+
     // Contacts management
     importContactsBtn?.addEventListener('click', importContacts);
     selectAllContactsBtn?.addEventListener('click', selectAllContacts);
@@ -72,6 +78,21 @@ function setupEventListeners() {
     messageContent?.addEventListener('input', handleMessageInput);
     clearMessageBtn?.addEventListener('click', clearMessage);
     sendMessageBtnMain?.addEventListener('click', sendMessage);
+
+    // Format toolbar (these are placeholders for now)
+    document.querySelectorAll('.format-toolbar button').forEach(btn => {
+        btn?.addEventListener('click', (e) => {
+            e.preventDefault();
+            const icon = btn.querySelector('span')?.textContent;
+            let message = 'Formatting: ';
+            if (icon?.includes('bold')) message += 'Bold text';
+            else if (icon?.includes('italic')) message += 'Italic text';
+            else if (icon?.includes('underline')) message += 'Underlined text';
+            else if (icon?.includes('emoji')) message += 'Emoji picker';
+            else message += 'Text formatting';
+            showNotification(message + ' - Coming soon!', 'info');
+        });
+    });
 }
 
 // Check authentication status
@@ -114,7 +135,7 @@ async function loadContacts(search = '', page = 1, append = false) {
     try {
         const params = new URLSearchParams({
             page: page.toString(),
-            limit: '50',
+            limit: '10',
             search: search
         });
 
