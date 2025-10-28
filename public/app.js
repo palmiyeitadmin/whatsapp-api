@@ -229,13 +229,19 @@ function selectAllContacts() {
         selectedContacts.add(contact.id);
     });
     updateSelectedContactsDisplay();
-    renderContactsList(allContacts);
+    // Update all checkboxes on the current page
+    document.querySelectorAll('.contact-checkbox').forEach(checkbox => {
+        checkbox.checked = true;
+    });
 }
 
 function deselectAllContacts() {
     selectedContacts.clear();
     updateSelectedContactsDisplay();
-    renderContactsList(allContacts);
+    // Update all checkboxes on the current page
+    document.querySelectorAll('.contact-checkbox').forEach(checkbox => {
+        checkbox.checked = false;
+    });
 }
 
 function updateSelectedContactsDisplay() {
