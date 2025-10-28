@@ -234,8 +234,27 @@
                                         </button>
                                     </div>
                                 </div>
-                                <div id="message-preview" class="w-full p-4 border border-dashed border-border-color rounded-md bg-background-main min-h-[80px]">
-                                    <p class="text-text-secondary italic">Message preview will appear here...</p>
+                                <!-- WhatsApp-style preview container -->
+                                <div class="w-full rounded-lg overflow-hidden border border-border-color" style="background: linear-gradient(to bottom, #e5ddd5 0%, #e5ddd5 100%);">
+                                    <!-- WhatsApp header -->
+                                    <div class="flex items-center space-x-3 px-4 py-2.5" style="background-color: #075e54;">
+                                        <div class="w-9 h-9 rounded-full bg-gray-300 flex items-center justify-center">
+                                            <span class="material-icons-outlined text-white text-lg">person</span>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="text-white font-medium text-sm">Contact Name</p>
+                                            <p class="text-gray-200 text-xs">online</p>
+                                        </div>
+                                    </div>
+                                    <!-- Chat area -->
+                                    <div class="p-4 min-h-[120px] flex items-end justify-end">
+                                        <div id="message-preview" class="max-w-[85%]">
+                                            <!-- Message bubble will be inserted here -->
+                                            <div class="text-center text-gray-500 text-sm italic opacity-60">
+                                                Type a message to see preview...
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

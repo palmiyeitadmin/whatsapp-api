@@ -323,9 +323,34 @@ function handleMessageInput() {
 
     // Update preview with WhatsApp formatting
     if (content.trim()) {
-        messagePreview.innerHTML = `<p class="whitespace-pre-wrap">${formatWhatsAppText(content)}</p>`;
+        // WhatsApp-style message bubble
+        messagePreview.innerHTML = `
+            <div class="relative inline-block max-w-full">
+                <!-- Message bubble -->
+                <div class="rounded-lg px-3 py-2 shadow-sm" style="background-color: #dcf8c6;">
+                    <p class="text-sm text-gray-800 whitespace-pre-wrap break-words">${formatWhatsAppText(content)}</p>
+                    <!-- Message tail -->
+                    <div class="absolute -right-2 bottom-0 w-0 h-0"
+                         style="border-left: 10px solid #dcf8c6;
+                                border-top: 10px solid transparent;
+                                border-bottom: 0px solid transparent;"></div>
+                    <!-- Message info (time + checkmarks) -->
+                    <div class="flex items-center justify-end space-x-1 mt-1">
+                        <span class="text-xs text-gray-600">12:34</span>
+                        <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                            <path d="M13.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-1-1a1 1 0 011.414-1.414l.293.293 7.293-7.293a1 1 0 011.414 0z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        `;
     } else {
-        messagePreview.innerHTML = '<p class="text-text-secondary italic">Message preview will appear here...</p>';
+        messagePreview.innerHTML = `
+            <div class="text-center text-gray-500 text-sm italic opacity-60">
+                Type a message to see preview...
+            </div>
+        `;
     }
 
     // Update send button state
