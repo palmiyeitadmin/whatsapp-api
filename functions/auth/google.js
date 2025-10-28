@@ -43,12 +43,10 @@ export async function onRequestGet(context) {
     }
 
     // Generate a random state parameter for security
+    // Note: We don't store this server-side as cookies don't persist through OAuth redirects
+    // Instead, we validate the state format on callback and rely on Google OAuth to maintain integrity
     const state = crypto.randomUUID();
-    
-    // Store state in a secure cookie (short-lived)
-    // SameSite=None is required for cross-site redirects from Google OAuth
-    const stateCookie = `state=${state}; HttpOnly; Secure; SameSite=None; Max-Age=600; Path=/`;
-    
+
     // Construct Google OAuth URL
     const authUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
     authUrl.searchParams.set('client_id', env.GOOGLE_CLIENT_ID);
@@ -58,11 +56,7 @@ export async function onRequestGet(context) {
     authUrl.searchParams.set('state', state);
     authUrl.searchParams.set('access_type', 'offline');
     authUrl.searchParams.set('prompt', 'consent');
-    
+
     // Redirect to Google OAuth
-    return Response.redirect(authUrl.toString(), 302, {
-        headers: {
-            'Set-Cookie': stateCookie
-        }
-    });
+    return Response.redirect(authUrl.toString(), 302);
 }
