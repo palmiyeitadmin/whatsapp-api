@@ -51,9 +51,10 @@ export const onRequestPost = createProtectedRoute(async function(context) {
         
     } catch (error) {
         console.error('Contacts import error:', error);
-        return new Response(JSON.stringify({ 
+        return new Response(JSON.stringify({
             error: 'Failed to import contacts',
-            details: error.message 
+            details: error.message,
+            stack: error.stack
         }), {
             status: 500,
             headers: { 'Content-Type': 'application/json' },
