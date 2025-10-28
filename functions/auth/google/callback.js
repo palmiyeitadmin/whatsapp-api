@@ -26,12 +26,52 @@ export async function onRequestGet(context) {
     // Verify state parameter to prevent CSRF attacks
     const cookies = request.headers.get('Cookie') || '';
     const stateCookie = cookies.split(';').find(c => c.trim().startsWith('state='));
-    const storedState = stateCookie ? stateCookie.split('=')[1] : null;
-    
+    const storedState = stateCookie ? stateCookie.split('=')[1].trim() : null;
+
     if (!storedState || storedState !== state) {
-        return new Response('Invalid state parameter', {
+        // More detailed error for debugging
+        return new Response(`
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Authentication Error</title>
+                <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+            </head>
+            <body class="bg-gray-50 min-h-screen flex items-center justify-center">
+                <div class="max-w-md w-full bg-white shadow-lg rounded-lg p-6">
+                    <div class="text-red-600 mb-4">
+                        <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                    </div>
+                    <h1 class="text-2xl font-bold text-gray-900 text-center mb-2">Authentication Error</h1>
+                    <p class="text-gray-600 text-center mb-4">
+                        Invalid state parameter. This could be due to:
+                    </p>
+                    <ul class="list-disc list-inside text-sm text-gray-700 mb-4">
+                        <li>Session expired (try again)</li>
+                        <li>Browser cookies blocked</li>
+                        <li>Cross-site request forgery protection</li>
+                    </ul>
+                    <div class="text-center">
+                        <a href="/" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
+                            Try Again
+                        </a>
+                    </div>
+                    <details class="mt-4 text-xs text-gray-500">
+                        <summary class="cursor-pointer">Debug Info</summary>
+                        <pre class="mt-2 p-2 bg-gray-100 rounded overflow-auto">Expected: ${state}
+Received: ${storedState || 'null'}
+Cookies: ${cookies.substring(0, 200)}</pre>
+                    </details>
+                </div>
+            </body>
+            </html>
+        `, {
             status: 400,
-            headers: { 'Content-Type': 'text/plain' }
+            headers: { 'Content-Type': 'text/html' }
         });
     }
     

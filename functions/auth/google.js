@@ -46,7 +46,8 @@ export async function onRequestGet(context) {
     const state = crypto.randomUUID();
     
     // Store state in a secure cookie (short-lived)
-    const stateCookie = `state=${state}; HttpOnly; Secure; SameSite=Lax; Max-Age=600; Path=/`;
+    // SameSite=None is required for cross-site redirects from Google OAuth
+    const stateCookie = `state=${state}; HttpOnly; Secure; SameSite=None; Max-Age=600; Path=/`;
     
     // Construct Google OAuth URL
     const authUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
