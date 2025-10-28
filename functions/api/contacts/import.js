@@ -1,4 +1,5 @@
-// Google Contacts import endpoint
+// Google Contacts import endpoint with batch processing optimization
+// Handles large contact lists by chunking SQL queries to avoid D1 limits
 import { createProtectedRoute } from '../../middleware/auth.js';
 
 export const onRequestPost = createProtectedRoute(async function(context) {
