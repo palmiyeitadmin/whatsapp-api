@@ -79,20 +79,12 @@ function setupEventListeners() {
     clearMessageBtn?.addEventListener('click', clearMessage);
     sendMessageBtnMain?.addEventListener('click', sendMessage);
 
-    // Format toolbar (these are placeholders for now)
-    document.querySelectorAll('.format-toolbar button').forEach(btn => {
-        btn?.addEventListener('click', (e) => {
-            e.preventDefault();
-            const icon = btn.querySelector('span')?.textContent;
-            let message = 'Formatting: ';
-            if (icon?.includes('bold')) message += 'Bold text';
-            else if (icon?.includes('italic')) message += 'Italic text';
-            else if (icon?.includes('underline')) message += 'Underlined text';
-            else if (icon?.includes('emoji')) message += 'Emoji picker';
-            else message += 'Text formatting';
-            showNotification(message + ' - Coming soon!', 'info');
-        });
-    });
+    // Format toolbar - Apply WhatsApp formatting
+    const formatButtons = document.querySelectorAll('.format-toolbar button');
+    formatButtons[0]?.addEventListener('click', () => applyFormatting('*', '*')); // Bold
+    formatButtons[1]?.addEventListener('click', () => applyFormatting('_', '_')); // Italic
+    formatButtons[2]?.addEventListener('click', () => applyFormatting('~', '~')); // Strikethrough
+    formatButtons[3]?.addEventListener('click', () => showNotification('Emoji picker coming soon!', 'info')); // Emoji
 }
 
 // Check authentication status
@@ -316,10 +308,10 @@ function handleSearch(event) {
 function handleMessageInput() {
     const content = messageContent.value;
     const length = content.length;
-    
+
     // Update character count
     messageCount.textContent = `${length} / 4096 characters`;
-    
+
     // Update character count color
     if (length > 4096) {
         messageCount.classList.add('text-red-500');
@@ -328,16 +320,71 @@ function handleMessageInput() {
         messageCount.classList.remove('text-red-500');
         messageCount.classList.add('text-gray-500');
     }
-    
-    // Update preview
+
+    // Update preview with WhatsApp formatting
     if (content.trim()) {
-        messagePreview.innerHTML = `<p class="whitespace-pre-wrap">${escapeHtml(content)}</p>`;
+        messagePreview.innerHTML = `<p class="whitespace-pre-wrap">${formatWhatsAppText(content)}</p>`;
     } else {
-        messagePreview.innerHTML = '<p class="text-gray-500">Message preview will appear here...</p>';
+        messagePreview.innerHTML = '<p class="text-text-secondary italic">Message preview will appear here...</p>';
     }
-    
+
     // Update send button state
     updateSendButtonState();
+}
+
+// Apply formatting to selected text or at cursor position
+function applyFormatting(startChar, endChar) {
+    const textarea = messageContent;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = textarea.value;
+    const selectedText = text.substring(start, end);
+
+    if (selectedText) {
+        // Wrap selected text with formatting characters
+        const before = text.substring(0, start);
+        const after = text.substring(end);
+        const formatted = `${startChar}${selectedText}${endChar}`;
+
+        textarea.value = before + formatted + after;
+
+        // Set cursor position after formatted text
+        const newPosition = start + formatted.length;
+        textarea.setSelectionRange(newPosition, newPosition);
+    } else {
+        // Insert formatting characters at cursor
+        const before = text.substring(0, start);
+        const after = text.substring(start);
+        const formatted = `${startChar}text${endChar}`;
+
+        textarea.value = before + formatted + after;
+
+        // Select "text" placeholder
+        textarea.setSelectionRange(start + startChar.length, start + startChar.length + 4);
+    }
+
+    textarea.focus();
+    handleMessageInput();
+}
+
+// Convert WhatsApp formatting to HTML
+function formatWhatsAppText(text) {
+    // Escape HTML first
+    let formatted = escapeHtml(text);
+
+    // Bold: *text*
+    formatted = formatted.replace(/\*([^\*]+)\*/g, '<strong>$1</strong>');
+
+    // Italic: _text_
+    formatted = formatted.replace(/_([^_]+)_/g, '<em>$1</em>');
+
+    // Strikethrough: ~text~
+    formatted = formatted.replace(/~([^~]+)~/g, '<del>$1</del>');
+
+    // Monospace: `text`
+    formatted = formatted.replace(/`([^`]+)`/g, '<code class="bg-gray-200 px-1 rounded">$1</code>');
+
+    return formatted;
 }
 
 function updateSendButtonState() {
