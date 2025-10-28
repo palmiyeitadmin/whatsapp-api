@@ -61,7 +61,20 @@ export async function onRequestGet(context) {
             headers: { 'Content-Type': 'text/html' }
         });
     }
-    
+
+    // Check required environment variables
+    if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET || !env.JWT_SECRET) {
+        console.error('Missing environment variables:', {
+            hasClientId: !!env.GOOGLE_CLIENT_ID,
+            hasClientSecret: !!env.GOOGLE_CLIENT_SECRET,
+            hasJwtSecret: !!env.JWT_SECRET
+        });
+        return new Response('Server configuration error. Please contact administrator.', {
+            status: 500,
+            headers: { 'Content-Type': 'text/plain' }
+        });
+    }
+
     try {
         // Exchange authorization code for tokens
         const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
@@ -121,9 +134,16 @@ export async function onRequestGet(context) {
         
     } catch (error) {
         console.error('OAuth callback error:', error);
-        return new Response(`Authentication error: ${error.message}`, {
+        console.error('Error stack:', error.stack);
+
+        return new Response(JSON.stringify({
+            error: 'Authentication failed',
+            message: error.message,
+            stack: error.stack,
+            timestamp: new Date().toISOString()
+        }), {
             status: 500,
-            headers: { 'Content-Type': 'text/plain' }
+            headers: { 'Content-Type': 'application/json' }
         });
     }
 }
