@@ -1,0 +1,2 @@
+# Cloudflare Pages redirects
+/functions/auth/google/callback / 302
