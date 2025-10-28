@@ -108,24 +108,13 @@ export async function onRequestGet(context) {
         
         // Create JWT session
         const sessionToken = await createSessionToken(id, email, env.JWT_SECRET);
-        
-        // Set session cookie and redirect to dashboard
+
+        // Set session cookie and redirect to dashboard using HTTP redirect
         const baseUrl = new URL(request.url).origin;
-        return new Response(`
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta http-equiv="refresh" content="0; url=${baseUrl}/">
-                <script>window.location.href = '${baseUrl}/';</script>
-            </head>
-            <body>
-                <p>Redirecting...</p>
-            </body>
-            </html>
-        `, {
-            status: 200,
+        return new Response(null, {
+            status: 302,
             headers: {
-                'Content-Type': 'text/html',
+                'Location': baseUrl + '/',
                 'Set-Cookie': `session=${sessionToken}; HttpOnly; Secure; SameSite=Lax; Max-Age=86400; Path=/`,
             },
         });
