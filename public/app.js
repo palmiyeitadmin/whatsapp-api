@@ -16,6 +16,14 @@ const contactsSearch = document.getElementById('contacts-search');
 const selectAllContactsBtn = document.getElementById('select-all-contacts');
 const deselectAllContactsBtn = document.getElementById('deselect-all-contacts');
 const importContactsBtn = document.getElementById('import-contacts-btn');
+const addContactBtn = document.getElementById('add-contact-btn');
+const addContactModal = document.getElementById('add-contact-modal');
+const saveContactBtn = document.getElementById('save-contact-btn');
+const cancelContactBtn = document.getElementById('cancel-contact-btn');
+const contactNameInput = document.getElementById('contact-name');
+const contactPhoneInput = document.getElementById('contact-phone');
+const contactEmailInput = document.getElementById('contact-email');
+const contactFormError = document.getElementById('contact-form-error');
 
 // Message composition
 const messageContent = document.getElementById('message-content');
@@ -73,6 +81,11 @@ function setupEventListeners() {
     selectAllContactsBtn?.addEventListener('click', selectAllContacts);
     deselectAllContactsBtn?.addEventListener('click', deselectAllContacts);
     contactsSearch?.addEventListener('input', handleSearch);
+    
+    // Add Contact Modal
+    addContactBtn?.addEventListener('click', showAddContactModal);
+    cancelContactBtn?.addEventListener('click', hideAddContactModal);
+    saveContactBtn?.addEventListener('click', saveContact);
     
     // Message composition
     messageContent?.addEventListener('input', handleMessageInput);
@@ -679,6 +692,103 @@ function formatDate(dateString) {
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
 }
 
+// Functions for Add Contact Modal
+function showAddContactModal() {
+    // Reset form
+    contactNameInput.value = '';
+    contactPhoneInput.value = '';
+    contactEmailInput.value = '';
+    contactFormError.textContent = '';
+    contactFormError.classList.add('hidden');
+    
+    // Show modal
+    addContactModal.classList.remove('hidden');
+    
+    // Focus on name field
+    setTimeout(() => {
+        contactNameInput.focus();
+    }, 100);
+}
+
+function hideAddContactModal() {
+    addContactModal.classList.add('hidden');
+}
+
+async function saveContact() {
+    try {
+        // Reset error message
+        contactFormError.textContent = '';
+        contactFormError.classList.add('hidden');
+        
+        // Validate form
+        const name = contactNameInput.value.trim();
+        const phone = contactPhoneInput.value.trim();
+        const email = contactEmailInput.value.trim();
+        
+        if (!phone) {
+            showContactFormError('Phone number is required');
+            return;
+        }
+        
+        // Basic phone validation - ensure it has some digits
+        if (!/\d/.test(phone)) {
+            showContactFormError('Invalid phone number format');
+            return;
+        }
+        
+        // Disable save button and show loading state
+        saveContactBtn.disabled = true;
+        saveContactBtn.textContent = 'Adding...';
+        
+        // Send request to API
+        const response = await authenticatedFetch('/api/contacts/create', {
+            method: 'POST',
+            body: JSON.stringify({
+                name,
+                phone_number: phone,
+                email
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Close modal
+            hideAddContactModal();
+            
+            // Show success message
+            showNotification('Contact added successfully', 'success');
+            
+            // Reload contacts list
+            loadContacts();
+            
+            // Update dashboard data
+            loadDashboardData();
+        } else {
+            // Handle different error types
+            if (response.status === 409) {
+                // Contact already exists
+                showContactFormError('A contact with this phone number already exists');
+            } else {
+                // Generic error
+                throw new Error(data.error || 'Failed to add contact');
+            }
+        }
+    } catch (error) {
+        console.error('Error adding contact:', error);
+        showContactFormError(error.message || 'Failed to add contact. Please try again.');
+    } finally {
+        // Restore save button
+        saveContactBtn.disabled = false;
+        saveContactBtn.textContent = 'Add Contact';
+    }
+}
+
+function showContactFormError(message) {
+    contactFormError.textContent = message;
+    contactFormError.classList.remove('hidden');
+}
+
 // Export functions for use in other scripts
 window.app = {
     authenticatedFetch,
@@ -687,5 +797,8 @@ window.app = {
     showNotification,
     formatDate,
     currentUser,
-    isAuthenticated
+    isAuthenticated,
+    showAddContactModal,
+    hideAddContactModal,
+    saveContact
 };
