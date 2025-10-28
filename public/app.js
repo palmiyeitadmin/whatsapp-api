@@ -383,13 +383,13 @@ function updateAuthContainer(authenticated) {
 // Initiate Google OAuth
 function initiateGoogleAuth() {
     // Redirect to Google OAuth endpoint
-    window.location.href = '/functions/auth/google';
+    window.location.href = '/auth/google';
 }
 
 // Logout function
 async function logout() {
     try {
-        const response = await fetch('/functions/auth/logout', {
+        const response = await fetch('/auth/logout', {
             method: 'POST',
             credentials: 'include'
         });
