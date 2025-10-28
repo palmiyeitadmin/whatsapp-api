@@ -245,20 +245,25 @@ function deselectAllContacts() {
 }
 
 function updateSelectedContactsDisplay() {
-    selectedCount.textContent = selectedContacts.size;
-    
-    if (selectedContacts.size === 0) {
-        selectedContactsDiv.innerHTML = '<p class="text-gray-500 text-sm">No contacts selected</p>';
-        return;
+    if (selectedCount) {
+        selectedCount.textContent = selectedContacts.size;
     }
-    
-    const selectedContactsData = allContacts.filter(contact => selectedContacts.has(contact.id));
-    selectedContactsDiv.innerHTML = selectedContactsData.map(contact => `
-        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-            ${contact.name || 'Unknown'}
-            <button onclick="removeSelectedContact(${contact.id})" class="ml-1 text-blue-600 hover:text-blue-800">×</button>
-        </span>
-    `).join('');
+
+    // Optional: Update selected contacts list if div exists
+    if (selectedContactsDiv) {
+        if (selectedContacts.size === 0) {
+            selectedContactsDiv.innerHTML = '<p class="text-gray-500 text-sm">No contacts selected</p>';
+            return;
+        }
+
+        const selectedContactsData = allContacts.filter(contact => selectedContacts.has(contact.id));
+        selectedContactsDiv.innerHTML = selectedContactsData.map(contact => `
+            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                ${contact.name || 'Unknown'}
+                <button onclick="removeSelectedContact(${contact.id})" class="ml-1 text-blue-600 hover:text-blue-800">×</button>
+            </span>
+        `).join('');
+    }
 }
 
 function removeSelectedContact(contactId) {
