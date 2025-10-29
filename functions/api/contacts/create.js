@@ -20,16 +20,31 @@ export const onRequestPost = createProtectedRoute(async function(context) {
             });
         }
         
-        // Basic phone number validation - adjust as needed for your use case
-        // At minimum, check that it's not empty and has some digits
-        if (!/\d/.test(phone_number)) {
+        // Enhanced phone number validation
+        // Must contain at least 7 digits and only allowed characters: digits, +, -, (), spaces
+        const cleanPhone = phone_number.replace(/[\s\-()]/g, '');
+        if (!/^\+?\d{7,15}$/.test(cleanPhone)) {
             return new Response(JSON.stringify({
                 success: false,
-                error: 'Invalid phone number format'
+                error: 'Invalid phone number format. Must contain 7-15 digits and may include +, -, (), spaces'
             }), {
                 status: 400,
                 headers: { 'Content-Type': 'application/json' }
             });
+        }
+
+        // Validate email if provided
+        if (email && email.trim()) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email.trim())) {
+                return new Response(JSON.stringify({
+                    success: false,
+                    error: 'Invalid email format'
+                }), {
+                    status: 400,
+                    headers: { 'Content-Type': 'application/json' }
+                });
+            }
         }
         
         // Check if contact already exists for this user with the same phone number
@@ -70,17 +85,32 @@ export const onRequestPost = createProtectedRoute(async function(context) {
             .run();
         
         if (result.success) {
-            // Get the newly created contact
+            // Get the newly created contact using the last inserted ID
+            // D1 uses last_insert_rowid() function, we need to query differently
             const newContactQuery = `
                 SELECT id, name, phone_number, email, google_contact_id, created_at, updated_at
                 FROM contacts
-                WHERE rowid = ?
+                WHERE user_google_id = ? AND phone_number = ?
+                ORDER BY created_at DESC
+                LIMIT 1
             `;
-            
+
             const newContact = await env.CF_INFOBIP_DB.prepare(newContactQuery)
-                .bind(result.lastInsertRowid)
+                .bind(user.google_id, phone_number)
                 .first();
-            
+
+            if (!newContact) {
+                console.error('Contact was inserted but could not be retrieved');
+                // Still return success since the insert worked
+                return new Response(JSON.stringify({
+                    success: true,
+                    message: 'Contact added successfully',
+                    contact: null
+                }), {
+                    headers: { 'Content-Type': 'application/json' }
+                });
+            }
+
             return new Response(JSON.stringify({
                 success: true,
                 message: 'Contact added successfully',

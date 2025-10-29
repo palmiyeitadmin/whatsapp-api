@@ -719,27 +719,37 @@ async function saveContact() {
         // Reset error message
         contactFormError.textContent = '';
         contactFormError.classList.add('hidden');
-        
+
         // Validate form
         const name = contactNameInput.value.trim();
         const phone = contactPhoneInput.value.trim();
         const email = contactEmailInput.value.trim();
-        
+
         if (!phone) {
             showContactFormError('Phone number is required');
             return;
         }
-        
-        // Basic phone validation - ensure it has some digits
-        if (!/\d/.test(phone)) {
-            showContactFormError('Invalid phone number format');
+
+        // Enhanced phone validation
+        const cleanPhone = phone.replace(/[\s\-()]/g, '');
+        if (!/^\+?\d{7,15}$/.test(cleanPhone)) {
+            showContactFormError('Invalid phone number. Must contain 7-15 digits and may include +, -, (), spaces');
             return;
         }
-        
+
+        // Email validation if provided
+        if (email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showContactFormError('Invalid email format');
+                return;
+            }
+        }
+
         // Disable save button and show loading state
         saveContactBtn.disabled = true;
         saveContactBtn.textContent = 'Adding...';
-        
+
         // Send request to API
         const response = await authenticatedFetch('/api/contacts/create', {
             method: 'POST',
@@ -749,29 +759,36 @@ async function saveContact() {
                 email
             })
         });
-        
+
         const data = await response.json();
-        
-        if (data.success) {
+
+        // Check HTTP status first, then data.success
+        if (response.ok && data.success) {
             // Close modal
             hideAddContactModal();
-            
+
             // Show success message
             showNotification('Contact added successfully', 'success');
-            
+
             // Reload contacts list
             loadContacts();
-            
+
             // Update dashboard data
             loadDashboardData();
         } else {
-            // Handle different error types
+            // Handle different error types based on status code
             if (response.status === 409) {
                 // Contact already exists
                 showContactFormError('A contact with this phone number already exists');
+            } else if (response.status === 400) {
+                // Validation error
+                showContactFormError(data.error || 'Invalid input data');
+            } else if (response.status === 500) {
+                // Server error
+                showContactFormError('Server error: ' + (data.details || data.error || 'Please try again later'));
             } else {
                 // Generic error
-                throw new Error(data.error || 'Failed to add contact');
+                showContactFormError(data.error || data.details || 'Failed to add contact');
             }
         }
     } catch (error) {
