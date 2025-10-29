@@ -2,7 +2,7 @@ name = "whatsapp-api"
 compatibility_date = "2024-10-21"
 pages_build_output_dir = "public"
 
-# D1 Database binding (Production)
+# D1 Database binding (Development/Default)
 [[d1_databases]]
 binding = "CF_INFOBIP_DB"
 database_name = "cf-infobip-db"
@@ -16,6 +16,15 @@ binding = "CF_INFOBIP_DB"
 database_name = "cf-infobip-db"
 database_id = "1153df23-a187-4c99-8d48-42edeb0ed734"
 
+# Production environment variables
+[env.production.vars]
+GOOGLE_CLIENT_ID = ""
+GOOGLE_CLIENT_SECRET = ""
+INFOBIP_API_KEY = ""
+INFOBIP_BASE_URL = "https://api.infobip.com"
+INFOBIP_WHATSAPP_SENDER = ""
+JWT_SECRET = "your-jwt-secret-here"
+
 [env.preview]
 name = "whatsapp-api-preview"
 
@@ -24,8 +33,8 @@ binding = "CF_INFOBIP_DB"
 database_name = "cf-infobip-db"
 database_id = "1153df23-a187-4c99-8d48-42edeb0ed734"
 
-# Environment variables
-[vars]
+# Preview environment variables
+[env.preview.vars]
 GOOGLE_CLIENT_ID = ""
 GOOGLE_CLIENT_SECRET = ""
 INFOBIP_API_KEY = ""
