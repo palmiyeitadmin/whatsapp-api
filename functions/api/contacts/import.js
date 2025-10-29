@@ -108,24 +108,39 @@ async function importContactsFromGoogle(accessToken, userId, env) {
 
         // CRITICAL: Check existing contacts in chunks to avoid SQL variable limit (999)
         // SQLite has a limit of 999 parameters per query
-        // We use chunks of 400 to be safe
+        // We use chunks of 150 to be extra safe (150 + 1 for userId = 151 << 999)
         const existingContactsMap = new Map();
-        const CHECK_BATCH_SIZE = 400; // Safe limit for IN clause (well below 999)
+        const CHECK_BATCH_SIZE = 150; // Very safe limit for IN clause
+
+        console.log(`Processing ${googleContactIds.length} contacts in chunks of ${CHECK_BATCH_SIZE}`);
 
         for (let i = 0; i < googleContactIds.length; i += CHECK_BATCH_SIZE) {
             const chunk = googleContactIds.slice(i, i + CHECK_BATCH_SIZE);
             const placeholders = chunk.map(() => '?').join(',');
+            
+            // Verify we don't exceed the limit
+            const totalParams = 1 + chunk.length; // 1 for userId + chunk length
+            if (totalParams >= 999) {
+                throw new Error(`Too many parameters in query: ${totalParams} (max 998)`);
+            }
 
-            const existingContactsResult = await env.CF_INFOBIP_DB.prepare(`
-                SELECT id, google_contact_id
-                FROM contacts
-                WHERE user_google_id = ? AND google_contact_id IN (${placeholders})
-            `).bind(userId, ...chunk).all();
+            console.log(`Checking chunk ${Math.floor(i/CHECK_BATCH_SIZE) + 1}: ${chunk.length} contacts`);
 
-            if (existingContactsResult.results) {
-                existingContactsResult.results.forEach(row => {
-                    existingContactsMap.set(row.google_contact_id, row.id);
-                });
+            try {
+                const existingContactsResult = await env.CF_INFOBIP_DB.prepare(`
+                    SELECT id, google_contact_id
+                    FROM contacts
+                    WHERE user_google_id = ? AND google_contact_id IN (${placeholders})
+                `).bind(userId, ...chunk).all();
+
+                if (existingContactsResult.results) {
+                    existingContactsResult.results.forEach(row => {
+                        existingContactsMap.set(row.google_contact_id, row.id);
+                    });
+                }
+            } catch (batchError) {
+                console.error(`Batch ${Math.floor(i/CHECK_BATCH_SIZE) + 1} failed:`, batchError);
+                throw new Error(`Failed to check existing contacts in batch ${Math.floor(i/CHECK_BATCH_SIZE) + 1}: ${batchError.message}`);
             }
         }
 
@@ -169,10 +184,29 @@ async function importContactsFromGoogle(accessToken, userId, env) {
         }
 
         // Execute batch (max 100 statements per batch in D1)
-        const BATCH_SIZE = 100;
+        const BATCH_SIZE = 25; // Further reduced for maximum safety
+        const totalBatches = Math.ceil(batchStatements.length / BATCH_SIZE);
+        
+        console.log(`Executing ${batchStatements.length} operations in ${totalBatches} batches of ${BATCH_SIZE}`);
+        
         for (let i = 0; i < batchStatements.length; i += BATCH_SIZE) {
+            const batchNum = Math.floor(i / BATCH_SIZE) + 1;
             const batch = batchStatements.slice(i, i + BATCH_SIZE);
-            await env.CF_INFOBIP_DB.batch(batch);
+            
+            console.log(`Executing batch ${batchNum}/${totalBatches}: ${batch.length} operations`);
+            
+            try {
+                await env.CF_INFOBIP_DB.batch(batch);
+                console.log(`Batch ${batchNum} completed successfully`);
+                
+                // Small delay between batches to avoid overwhelming the database
+                if (batchNum < totalBatches) {
+                    await new Promise(resolve => setTimeout(resolve, 50));
+                }
+            } catch (batchError) {
+                console.error(`Batch ${batchNum} failed:`, batchError);
+                throw new Error(`Failed to execute batch ${batchNum}: ${batchError.message}`);
+            }
         }
 
         // Get next page token
