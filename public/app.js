@@ -86,7 +86,17 @@ function setupEventListeners() {
     addContactBtn?.addEventListener('click', showAddContactModal);
     cancelContactBtn?.addEventListener('click', hideAddContactModal);
     saveContactBtn?.addEventListener('click', saveContact);
-    
+
+    // Close modal on backdrop click
+    document.getElementById('modal-backdrop')?.addEventListener('click', hideAddContactModal);
+
+    // Close modal on ESC key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !addContactModal?.classList.contains('hidden')) {
+            hideAddContactModal();
+        }
+    });
+
     // Message composition
     messageContent?.addEventListener('input', handleMessageInput);
     clearMessageBtn?.addEventListener('click', clearMessage);

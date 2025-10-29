@@ -96,11 +96,17 @@
                                 <p class="text-2xl font-bold" id="total-contacts">0</p>
                             </div>
                         </div>
-                        <div class="mt-auto pt-4 flex space-x-3">
-                            <button id="import-contacts-btn" class="flex-1 py-2 px-4 bg-primary text-white text-sm font-medium rounded-lg hover:opacity-90 transition-opacity">
-                                Import Contacts
-                            </button>
-                            <button id="manage-contacts-btn" class="flex-1 py-2 px-4 bg-surface text-primary text-sm font-medium rounded-lg border border-primary hover:bg-primary hover:text-white transition-colors">
+                        <div class="mt-auto pt-4 space-y-2">
+                            <div class="flex space-x-3">
+                                <button id="add-contact-btn" class="flex-1 py-2 px-4 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center space-x-2">
+                                    <span class="material-icons-outlined text-lg">person_add</span>
+                                    <span>Add Contact</span>
+                                </button>
+                                <button id="import-contacts-btn" class="flex-1 py-2 px-4 bg-primary text-white text-sm font-medium rounded-lg hover:opacity-90 transition-opacity">
+                                    Import Contacts
+                                </button>
+                            </div>
+                            <button id="manage-contacts-btn" class="w-full py-2 px-4 bg-surface text-primary text-sm font-medium rounded-lg border border-primary hover:bg-primary hover:text-white transition-colors">
                                 Manage
                             </button>
                         </div>
@@ -279,11 +285,11 @@
         <!-- Add Contact Modal -->
         <div id="add-contact-modal" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
             <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <!-- Background overlay -->
-                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+                <!-- Background overlay - Click to close -->
+                <div id="modal-backdrop" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
 
                 <!-- Modal panel -->
-                <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div id="modal-panel" class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
                     <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                         <div class="sm:flex sm:items-start">
                             <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-primary bg-opacity-20 sm:mx-0 sm:h-10 sm:w-10">
