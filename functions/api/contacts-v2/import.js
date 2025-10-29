@@ -108,9 +108,9 @@ async function importContactsFromGoogle(accessToken, userId, env) {
 
         // CRITICAL: Check existing contacts in chunks to avoid SQL variable limit (999)
         // SQLite has a limit of 999 parameters per query
-        // We use chunks of 150 to be extra safe (150 + 1 for userId = 151 << 999)
+        // D1 appears to have stricter limits, using 50 to be extra safe (50 + 1 for userId = 51 << 999)
         const existingContactsMap = new Map();
-        const CHECK_BATCH_SIZE = 150; // Very safe limit for IN clause
+        const CHECK_BATCH_SIZE = 50; // Extra conservative limit for D1
 
         console.log(`Processing ${googleContactIds.length} contacts in chunks of ${CHECK_BATCH_SIZE}`);
 
