@@ -55,7 +55,7 @@ export async function onRequestGet(context) {
     authUrl.searchParams.set('scope', 'openid email profile https://www.googleapis.com/auth/contacts.readonly');
     authUrl.searchParams.set('state', state);
     authUrl.searchParams.set('access_type', 'offline');
-    authUrl.searchParams.set('prompt', 'consent');
+    authUrl.searchParams.set('prompt', 'select_account consent'); // Force account selection and consent
 
     // Redirect to Google OAuth
     return Response.redirect(authUrl.toString(), 302);
