@@ -232,10 +232,11 @@ async function sendWhatsAppMessages(contacts, message, apiKey, baseUrl, sender, 
 
 async function sendInfobipMessage(phoneNumber, message, apiKey, baseUrl, sender) {
     const url = `${baseUrl}/whatsapp/1/message/text`;
-    
+
     const payload = {
         from: sender,
         to: phoneNumber,
+        messageId: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         content: {
             text: message
         }
@@ -252,15 +253,36 @@ async function sendInfobipMessage(phoneNumber, message, apiKey, baseUrl, sender)
     });
     
     if (!response.ok) {
-        const errorData = await response.text();
-        throw new Error(`Infobip API error: ${response.status} - ${errorData}`);
+        let errorData;
+        try {
+            errorData = await response.json();
+        } catch {
+            errorData = await response.text();
+        }
+
+        const errorMessage = errorData?.requestError?.serviceException?.text
+            || errorData?.message
+            || errorData
+            || 'Unknown error';
+
+        console.error('Infobip API Error:', {
+            status: response.status,
+            error: errorMessage,
+            to: phoneNumber
+        });
+
+        throw new Error(`Infobip API error: ${response.status} - ${errorMessage}`);
     }
     
     const data = await response.json();
-    
+
+    // Infobip returns messages array or single message object
+    const messageId = data.messageId || data.messages?.[0]?.messageId || data.to;
+    const status = data.status?.groupName || data.messages?.[0]?.status?.groupName || 'PENDING';
+
     return {
-        messageId: data.messageId || data.messages?.[0]?.messageId,
-        status: data.status || 'sent',
+        messageId: messageId,
+        status: status,
         response: data
     };
 }
