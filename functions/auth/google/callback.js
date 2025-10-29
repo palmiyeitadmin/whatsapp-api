@@ -77,6 +77,15 @@ export async function onRequestGet(context) {
 
     try {
         // Exchange authorization code for tokens
+        const redirectUri = `${new URL(request.url).origin}/auth/google/callback`;
+
+        console.log('Token exchange attempt:', {
+            redirectUri,
+            hasCode: !!code,
+            hasClientId: !!env.GOOGLE_CLIENT_ID,
+            hasClientSecret: !!env.GOOGLE_CLIENT_SECRET
+        });
+
         const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
             method: 'POST',
             headers: {
@@ -87,13 +96,18 @@ export async function onRequestGet(context) {
                 client_secret: env.GOOGLE_CLIENT_SECRET,
                 code,
                 grant_type: 'authorization_code',
-                redirect_uri: `${new URL(request.url).origin}/auth/google/callback`,
+                redirect_uri: redirectUri,
             }),
         });
-        
+
         if (!tokenResponse.ok) {
             const errorData = await tokenResponse.text();
-            throw new Error(`Token exchange failed: ${errorData}`);
+            console.error('Google token exchange error:', {
+                status: tokenResponse.status,
+                statusText: tokenResponse.statusText,
+                error: errorData
+            });
+            throw new Error(`Token exchange failed (${tokenResponse.status}): ${errorData}`);
         }
         
         const tokenData = await tokenResponse.json();
