@@ -286,7 +286,7 @@ async function importContacts() {
     try {
         showNotification('Importing contacts from Google...', 'info');
 
-        const response = await authenticatedFetch('/api/contacts/import', {
+        const response = await authenticatedFetch('/api/contacts-v2/import', {
             method: 'POST'
         });
 
