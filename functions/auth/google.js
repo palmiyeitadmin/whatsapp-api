@@ -4,6 +4,11 @@ export async function onRequestGet(context) {
 
     // Check if required environment variables are set
     if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET) {
+        console.error('Google OAuth configuration missing:', {
+            hasClientId: !!env.GOOGLE_CLIENT_ID,
+            hasClientSecret: !!env.GOOGLE_CLIENT_SECRET
+        });
+
         return new Response(`
             <!DOCTYPE html>
             <html lang="en">
@@ -22,12 +27,17 @@ export async function onRequestGet(context) {
                     </div>
                     <h1 class="text-2xl font-bold text-gray-900 text-center mb-2">Configuration Error</h1>
                     <p class="text-gray-600 text-center mb-4">
-                        Google OAuth credentials are not configured. Please set the following environment variables in Cloudflare Pages:
+                        Google OAuth credentials are not configured. Please set the following secrets in Cloudflare Pages:
                     </p>
-                    <ul class="list-disc list-inside text-sm text-gray-700 mb-4">
-                        <li>GOOGLE_CLIENT_ID</li>
-                        <li>GOOGLE_CLIENT_SECRET</li>
+                    <ul class="list-disc list-inside text-sm text-gray-700 mb-4 space-y-1">
+                        <li>GOOGLE_CLIENT_ID${!env.GOOGLE_CLIENT_ID ? ' <span class="text-red-600 font-semibold">✗ Missing</span>' : ' ✓'}</li>
+                        <li>GOOGLE_CLIENT_SECRET${!env.GOOGLE_CLIENT_SECRET ? ' <span class="text-red-600 font-semibold">✗ Missing</span>' : ' ✓'}</li>
                     </ul>
+                    <div class="bg-blue-50 border border-blue-200 rounded p-3 mb-4 text-xs">
+                        <p class="text-blue-800 font-semibold mb-1">How to fix:</p>
+                        <code class="text-blue-900 block">npx wrangler pages secret put GOOGLE_CLIENT_ID --project-name whatsapp-api</code>
+                        <code class="text-blue-900 block mt-1">npx wrangler pages secret put GOOGLE_CLIENT_SECRET --project-name whatsapp-api</code>
+                    </div>
                     <div class="text-center">
                         <a href="/" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
                             Go Back
@@ -37,7 +47,7 @@ export async function onRequestGet(context) {
             </body>
             </html>
         `, {
-            status: 500,
+            status: 503, // Service Unavailable - daha uygun status code
             headers: { 'Content-Type': 'text/html' }
         });
     }
