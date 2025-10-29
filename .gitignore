@@ -91,5 +91,5 @@ jspm_packages/
 # TernJS port file
 .tern-port
 
-# Tailwind CSS output
-public/styles/output.css
+# Tailwind CSS output - Commented out because we need it in production
+# public/styles/output.css
