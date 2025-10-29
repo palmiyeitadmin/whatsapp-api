@@ -67,13 +67,14 @@ export const onRequestPost = createProtectedRoute(async function(context) {
         
         // Send messages with rate limiting and batch processing
         const sendResults = await sendWhatsAppMessages(
-            contacts, 
-            message, 
-            env.INFOBIP_API_KEY, 
+            contacts,
+            message,
+            env.INFOBIP_API_KEY,
             env.INFOBIP_BASE_URL,
             env.INFOBIP_WHATSAPP_SENDER,
             user.google_id,
-            campaign?.id
+            campaignId,
+            env
         );
         
         // Update campaign status if provided
@@ -106,18 +107,29 @@ export const onRequestPost = createProtectedRoute(async function(context) {
 });
 
 async function getContactsByIds(contactIds, userId, env) {
-    const placeholders = contactIds.map(() => '?').join(',');
-    const query = `
-        SELECT id, name, phone_number, email 
-        FROM contacts 
-        WHERE user_google_id = ? AND id IN (${placeholders})
-    `;
-    
-    const result = await env.CF_INFOBIP_DB.prepare(query)
-        .bind(userId, ...contactIds)
-        .all();
-    
-    return result.results || [];
+    // Handle large contact lists by chunking to avoid SQL variable limit
+    const CHUNK_SIZE = 100; // Safe limit for SQL IN clause
+    const allContacts = [];
+
+    for (let i = 0; i < contactIds.length; i += CHUNK_SIZE) {
+        const chunk = contactIds.slice(i, i + CHUNK_SIZE);
+        const placeholders = chunk.map(() => '?').join(',');
+        const query = `
+            SELECT id, name, phone_number, email
+            FROM contacts
+            WHERE user_google_id = ? AND id IN (${placeholders})
+        `;
+
+        const result = await env.CF_INFOBIP_DB.prepare(query)
+            .bind(userId, ...chunk)
+            .all();
+
+        if (result.results) {
+            allContacts.push(...result.results);
+        }
+    }
+
+    return allContacts;
 }
 
 async function getCampaignById(campaignId, userId, env) {
@@ -138,7 +150,7 @@ async function updateCampaignStatus(campaignId, status, env) {
     `).bind(status, campaignId).run();
 }
 
-async function sendWhatsAppMessages(contacts, message, apiKey, baseUrl, sender, userId, campaignId = null) {
+async function sendWhatsAppMessages(contacts, message, apiKey, baseUrl, sender, userId, campaignId = null, env) {
     const results = [];
     const batchSize = 10; // Process in batches of 10
     const delayBetweenBatches = 1000; // 1 second delay between batches
@@ -254,25 +266,27 @@ async function sendInfobipMessage(phoneNumber, message, apiKey, baseUrl, sender)
 }
 
 function formatPhoneNumber(phoneNumber) {
-    // Remove all non-numeric characters
-    let cleaned = phoneNumber.replace(/\D/g, '');
-    
+    // Remove all non-numeric characters except leading +
+    let cleaned = phoneNumber.replace(/[^\d+]/g, '');
+
+    // If it starts with +, keep it and remove all other non-numeric
+    if (cleaned.startsWith('+')) {
+        cleaned = cleaned.substring(1).replace(/\D/g, '');
+    } else {
+        cleaned = cleaned.replace(/\D/g, '');
+    }
+
     // Remove leading zeros
     cleaned = cleaned.replace(/^0+/, '');
-    
-    // Ensure it has country code (add default if missing)
-    if (cleaned.length === 10) {
-        // Assume US number if 10 digits
-        cleaned = '1' + cleaned;
-    } else if (cleaned.length < 10) {
+
+    // If number doesn't have country code, don't assume - return as-is
+    // The user should provide properly formatted international numbers
+
+    // Validate length (should be 10-15 digits for international numbers)
+    if (cleaned.length < 10 || cleaned.length > 15) {
         return null; // Invalid number
     }
-    
-    // Validate length (should be 11-15 digits for international numbers)
-    if (cleaned.length < 11 || cleaned.length > 15) {
-        return null;
-    }
-    
+
     return cleaned;
 }
 
