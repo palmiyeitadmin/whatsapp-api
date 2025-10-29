@@ -3,12 +3,21 @@ import { createProtectedRoute } from '../../middleware/auth.js';
 
 export const onRequestPost = createProtectedRoute(async function(context) {
     const { env, user } = context;
-    
+
     try {
+        console.log('=== Message Send Request Started ===');
+        console.log('User:', { id: user.google_id, email: user.email });
+
         const body = await context.request.json();
-        
+
         // Validate request body
         const { message, recipients, campaignId } = body;
+
+        console.log('Request details:', {
+            messageLength: message?.length,
+            recipientsCount: recipients?.length,
+            hasCampaignId: !!campaignId
+        });
         
         if (!message || !message.trim()) {
             return new Response(JSON.stringify({ 
@@ -38,33 +47,64 @@ export const onRequestPost = createProtectedRoute(async function(context) {
             });
         }
         
+        // Check Infobip configuration
+        if (!env.INFOBIP_API_KEY || !env.INFOBIP_BASE_URL || !env.INFOBIP_WHATSAPP_SENDER) {
+            console.error('Infobip configuration missing:', {
+                hasApiKey: !!env.INFOBIP_API_KEY,
+                hasBaseUrl: !!env.INFOBIP_BASE_URL,
+                hasSender: !!env.INFOBIP_WHATSAPP_SENDER
+            });
+            return new Response(JSON.stringify({
+                error: 'Infobip is not configured',
+                details: 'Please configure INFOBIP_API_KEY, INFOBIP_BASE_URL, and INFOBIP_WHATSAPP_SENDER',
+                missing: {
+                    INFOBIP_API_KEY: !env.INFOBIP_API_KEY,
+                    INFOBIP_BASE_URL: !env.INFOBIP_BASE_URL,
+                    INFOBIP_WHATSAPP_SENDER: !env.INFOBIP_WHATSAPP_SENDER
+                }
+            }), {
+                status: 503,
+                headers: { 'Content-Type': 'application/json' },
+            });
+        }
+
         // Get contact details for recipients
         const contactIds = recipients.map(r => r.id || r);
+        console.log('Fetching contacts:', { contactIds });
+
         const contacts = await getContactsByIds(contactIds, user.google_id, env);
-        
+        console.log('Contacts retrieved:', { count: contacts.length });
+
         if (contacts.length === 0) {
-            return new Response(JSON.stringify({ 
-                error: 'No valid contacts found' 
+            return new Response(JSON.stringify({
+                error: 'No valid contacts found'
             }), {
                 status: 400,
                 headers: { 'Content-Type': 'application/json' },
             });
         }
-        
+
         // Create campaign if campaignId is provided
         let campaign = null;
         if (campaignId) {
             campaign = await getCampaignById(campaignId, user.google_id, env);
             if (!campaign) {
-                return new Response(JSON.stringify({ 
-                    error: 'Campaign not found' 
+                return new Response(JSON.stringify({
+                    error: 'Campaign not found'
                 }), {
                     status: 404,
                     headers: { 'Content-Type': 'application/json' },
                 });
             }
         }
-        
+
+        console.log('Starting message send:', {
+            contactsCount: contacts.length,
+            apiKey: env.INFOBIP_API_KEY ? 'Set' : 'Missing',
+            baseUrl: env.INFOBIP_BASE_URL,
+            sender: env.INFOBIP_WHATSAPP_SENDER
+        });
+
         // Send messages with rate limiting and batch processing
         const sendResults = await sendWhatsAppMessages(
             contacts,
@@ -76,6 +116,12 @@ export const onRequestPost = createProtectedRoute(async function(context) {
             campaignId,
             env
         );
+
+        console.log('=== Message Send Completed ===', {
+            total: sendResults.length,
+            sent: sendResults.filter(r => r.status === 'sent').length,
+            failed: sendResults.filter(r => r.status === 'failed').length
+        });
         
         // Update campaign status if provided
         if (campaign) {
@@ -95,10 +141,15 @@ export const onRequestPost = createProtectedRoute(async function(context) {
         });
         
     } catch (error) {
-        console.error('Message send error:', error);
-        return new Response(JSON.stringify({ 
+        console.error('=== Message Send Error ===');
+        console.error('Error:', error);
+        console.error('Stack:', error.stack);
+
+        return new Response(JSON.stringify({
             error: 'Failed to send messages',
-            details: error.message 
+            details: error.message,
+            stack: error.stack,
+            timestamp: new Date().toISOString()
         }), {
             status: 500,
             headers: { 'Content-Type': 'application/json' },
