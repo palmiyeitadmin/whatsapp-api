@@ -16,14 +16,15 @@ binding = "CF_INFOBIP_DB"
 database_name = "cf-infobip-db"
 database_id = "1153df23-a187-4c99-8d48-42edeb0ed734"
 
-# Production environment variables
-[env.production.vars]
-GOOGLE_CLIENT_ID = ""
-GOOGLE_CLIENT_SECRET = ""
-INFOBIP_API_KEY = ""
-INFOBIP_BASE_URL = "https://api.infobip.com"
-INFOBIP_WHATSAPP_SENDER = ""
-JWT_SECRET = "your-jwt-secret-here"
+# Note: Environment variables are managed via Cloudflare Pages Secrets
+# Use: npx wrangler pages secret put VARIABLE_NAME --project-name whatsapp-api
+# Required secrets:
+# - GOOGLE_CLIENT_ID
+# - GOOGLE_CLIENT_SECRET
+# - INFOBIP_API_KEY
+# - INFOBIP_BASE_URL
+# - INFOBIP_WHATSAPP_SENDER
+# - JWT_SECRET
 
 [env.preview]
 name = "whatsapp-api-preview"
@@ -32,15 +33,6 @@ name = "whatsapp-api-preview"
 binding = "CF_INFOBIP_DB"
 database_name = "cf-infobip-db"
 database_id = "1153df23-a187-4c99-8d48-42edeb0ed734"
-
-# Preview environment variables
-[env.preview.vars]
-GOOGLE_CLIENT_ID = ""
-GOOGLE_CLIENT_SECRET = ""
-INFOBIP_API_KEY = ""
-INFOBIP_BASE_URL = "https://api.infobip.com"
-INFOBIP_WHATSAPP_SENDER = ""
-JWT_SECRET = "your-jwt-secret-here"
 
 # KV namespace for sessions (optional alternative to JWT)
 # [[kv_namespaces]]
