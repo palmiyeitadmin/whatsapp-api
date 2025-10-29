@@ -6,42 +6,7 @@
     <title>Palmiye Broadcaster</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: "#131d27",
-                        accent: "#f6e354",
-                        "background-main": "#F8F9FA",
-                        "surface": "#ffffff",
-                        "text-primary": "#131d27",
-                        "text-secondary": "#6C757D",
-                        "border-color": "#E0E0E0",
-                    },
-                    fontFamily: {
-                        sans: ["Roboto", "sans-serif"],
-                    },
-                    borderRadius: {
-                        DEFAULT: "0.5rem",
-                    },
-                },
-            },
-        };
-    </script>
-    <style>
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background-color: #a0aec0;
-            border-radius: 10px;
-        }
-    </style>
+    <link href="/styles/output.css" rel="stylesheet">
 </head>
 <body class="bg-background-main font-sans text-text-primary">
     <div class="min-h-screen">
@@ -265,8 +230,11 @@
                             </div>
                         </div>
 
+                        <!-- Send Status Message -->
+                        <div id="send-status" class="mt-4 text-sm font-medium text-center min-h-[1.5rem]"></div>
+
                         <!-- Action Buttons -->
-                        <div class="mt-8 flex justify-end items-center space-x-3">
+                        <div class="mt-4 flex justify-end items-center space-x-3">
                             <button id="clear-message-btn" class="px-6 py-2.5 bg-gray-200 text-text-primary font-bold rounded-lg hover:bg-gray-300 transition-colors">
                                 Clear
                             </button>

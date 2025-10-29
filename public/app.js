@@ -466,11 +466,15 @@ async function sendMessage() {
     }
     
     try {
-        sendStatus.textContent = 'Sending messages...';
-        sendMessageBtnMain.disabled = true;
-        
+        if (sendStatus) {
+            sendStatus.textContent = 'Sending messages...';
+        }
+        if (sendMessageBtnMain) {
+            sendMessageBtnMain.disabled = true;
+        }
+
         const recipients = Array.from(selectedContacts).map(id => ({ id }));
-        
+
         const response = await authenticatedFetch('/api/message/send', {
             method: 'POST',
             body: JSON.stringify({
@@ -478,25 +482,27 @@ async function sendMessage() {
                 recipients
             })
         });
-        
+
         const data = await response.json();
-        
+
         if (data.success) {
             const { sent, failed, total } = data.summary;
             showNotification(`Messages sent: ${sent}/${total}`, sent === total ? 'success' : 'warning');
-            
-            if (failed > 0) {
-                sendStatus.textContent = `${sent} sent, ${failed} failed`;
-                sendStatus.classList.add('text-yellow-600');
-            } else {
-                sendStatus.textContent = 'All messages sent successfully!';
-                sendStatus.classList.add('text-green-600');
+
+            if (sendStatus) {
+                if (failed > 0) {
+                    sendStatus.textContent = `${sent} sent, ${failed} failed`;
+                    sendStatus.classList.add('text-yellow-600');
+                } else {
+                    sendStatus.textContent = 'All messages sent successfully!';
+                    sendStatus.classList.add('text-green-600');
+                }
             }
-            
+
             // Clear the form
             clearMessage();
             deselectAllContacts();
-            
+
             // Update dashboard data
             loadDashboardData();
         } else {
@@ -505,15 +511,21 @@ async function sendMessage() {
     } catch (error) {
         console.error('Send error:', error);
         showNotification(`Failed to send messages: ${error.message}`, 'error');
-        sendStatus.textContent = 'Failed to send messages';
-        sendStatus.classList.add('text-red-600');
+        if (sendStatus) {
+            sendStatus.textContent = 'Failed to send messages';
+            sendStatus.classList.add('text-red-600');
+        }
     } finally {
-        sendMessageBtnMain.disabled = false;
-        
+        if (sendMessageBtnMain) {
+            sendMessageBtnMain.disabled = false;
+        }
+
         // Clear status after 5 seconds
         setTimeout(() => {
-            sendStatus.textContent = '';
-            sendStatus.classList.remove('text-green-600', 'text-yellow-600', 'text-red-600');
+            if (sendStatus) {
+                sendStatus.textContent = '';
+                sendStatus.classList.remove('text-green-600', 'text-yellow-600', 'text-red-600');
+            }
         }, 5000);
     }
 }
