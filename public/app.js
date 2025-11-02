@@ -90,6 +90,23 @@ function setupEventListeners() {
     const loadMoreBtn = document.getElementById('load-more-contacts');
     loadMoreBtn?.addEventListener('click', loadMoreContacts);
     
+    // Add contact modal
+    const addContactBtn = document.getElementById('add-contact-btn');
+    const closeAddContactModalBtn = document.getElementById('close-add-contact-modal');
+    const cancelAddContactBtn = document.getElementById('cancel-add-contact');
+    const addContactForm = document.getElementById('add-contact-form');
+    
+    addContactBtn?.addEventListener('click', showAddContactModal);
+    closeAddContactModalBtn?.addEventListener('click', hideAddContactModal);
+    cancelAddContactBtn?.addEventListener('click', hideAddContactModal);
+    addContactForm?.addEventListener('submit', saveContact);
+    
+    // Provider change in add contact form
+    const contactProviderRadios = document.querySelectorAll('input[name="contact-provider"]');
+    contactProviderRadios.forEach(radio => {
+        radio.addEventListener('change', handleContactProviderChange);
+    });
+    
     // Provider change handlers
     providerRadios.forEach(radio => {
         radio.addEventListener('change', handleProviderChange);
@@ -557,6 +574,101 @@ function updateAuthContainer(authenticated) {
     } else {
         authContainer.innerHTML = '';
     }
+}
+
+// Modal functions for adding contacts
+function showAddContactModal() {
+    const modal = document.getElementById('add-contact-modal');
+    modal.classList.remove('hidden');
+    // Reset form
+    document.getElementById('add-contact-form').reset();
+    // Show WhatsApp fields by default
+    handleContactProviderChange({ target: { value: 'whatsapp' } });
+}
+
+function hideAddContactModal() {
+    const modal = document.getElementById('add-contact-modal');
+    modal.classList.add('hidden');
+}
+
+function handleContactProviderChange(e) {
+    const provider = e.target.value;
+    const whatsappFields = document.getElementById('whatsapp-fields');
+    const telegramFields = document.getElementById('telegram-fields');
+    
+    if (provider === 'whatsapp') {
+        whatsappFields.classList.remove('hidden');
+        telegramFields.classList.add('hidden');
+    } else {
+        whatsappFields.classList.add('hidden');
+        telegramFields.classList.remove('hidden');
+    }
+}
+
+async function saveContact(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+    const provider = formData.get('contact-provider');
+    
+    let contactData = {
+        name: formData.get('contact-name'),
+        email: formData.get('contact-email'),
+        preferred_provider: provider
+    };
+    
+    if (provider === 'whatsapp') {
+        contactData.phone_number = formData.get('contact-phone');
+    } else {
+        contactData.telegram_id = formData.get('contact-telegram-id');
+        contactData.telegram_username = formData.get('contact-telegram-username');
+    }
+    
+    try {
+        showNotification('Adding contact...', 'info');
+        
+        const response = await authenticatedFetch('/api/contacts/create', {
+            method: 'POST',
+            body: JSON.stringify(contactData)
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showNotification('Contact added successfully!', 'success');
+            hideAddContactModal();
+            // Reload contacts list
+            loadContacts(currentSearch, 1, false);
+            loadDashboardData(); // Update contact count
+        } else {
+            throw new Error(data.error || 'Failed to add contact');
+        }
+    } catch (error) {
+        console.error('Save contact error:', error);
+        showContactFormError(error.message);
+    }
+}
+
+function showContactFormError(message) {
+    // Remove any existing error messages
+    const existingError = document.querySelector('.contact-form-error');
+    if (existingError) {
+        existingError.remove();
+    }
+    
+    // Add error message above the form
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'contact-form-error bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4';
+    errorDiv.textContent = message;
+    
+    const modal = document.getElementById('add-contact-modal');
+    const form = document.getElementById('add-contact-form');
+    form.parentNode.insertBefore(errorDiv, form);
+    
+    // Remove error after 5 seconds
+    setTimeout(() => {
+        errorDiv.remove();
+    }, 5000);
 }
 
 // Initiate Google OAuth
