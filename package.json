@@ -4,7 +4,9 @@
   "description": "A serverless WhatsApp bulk messaging application running on Cloudflare Pages with Google Contacts synchronization and Infobip API integration",
   "main": "index.js",
   "scripts": {
-    "dev": "npx wrangler pages dev public --compatibility-date=2023-12-01",
+    "build": "npx tailwindcss -i ./public/styles/input.css -o ./public/styles/output.css --minify",
+    "build:watch": "npx tailwindcss -i ./public/styles/input.css -o ./public/styles/output.css --watch",
+    "dev": "wrangler pages dev public --compatibility-date=2023-12-01",
     "deploy": "wrangler pages deploy public",
     "deploy:staging": "wrangler pages deploy public --env staging",
     "deploy:production": "wrangler pages deploy public --env production",
@@ -15,12 +17,10 @@
     "test:coverage": "vitest --coverage",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "test:load": "k6 run tests/load/k6-config.js",
     "lint": "eslint functions/**/*.js public/**/*.js",
     "lint:fix": "eslint functions/**/*.js public/**/*.js --fix",
     "git:push": "bash scripts/deploy.sh",
-    "git:push:windows": "scripts/deploy.bat",
-    "build": "echo 'No build required for this project'"
+    "git:push:windows": "scripts/deploy.bat"
   },
   "keywords": [
     "cloudflare",
@@ -38,9 +38,11 @@
     "@vitest/coverage-v8": "^1.0.0",
     "playwright": "^1.40.0",
     "@playwright/test": "^1.40.0",
-    "k6": "^0.45.0",
     "eslint": "^8.55.0",
-    "eslint-config-standard": "^17.1.0"
+    "eslint-config-standard": "^17.1.0",
+    "tailwindcss": "^3.4.0",
+    "@tailwindcss/forms": "^0.5.7",
+    "@tailwindcss/typography": "^0.5.10"
   },
   "dependencies": {
     "googleapis": "^128.0.0"

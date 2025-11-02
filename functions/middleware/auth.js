@@ -44,11 +44,21 @@ export async function withAuth(request, env) {
 async function verifyJWT(token, secret) {
     try {
         const [headerB64, payloadB64, signatureB64] = token.split('.');
-        
+
         if (!headerB64 || !payloadB64 || !signatureB64) {
             return null;
         }
-        
+
+        // Base64URL decode helper
+        const base64urlDecode = (str) => {
+            // Add padding if needed
+            let base64 = str.replace(/-/g, '+').replace(/_/g, '/');
+            while (base64.length % 4) {
+                base64 += '=';
+            }
+            return atob(base64);
+        };
+
         // Verify signature
         const encoder = new TextEncoder();
         const key = await crypto.subtle.importKey(
@@ -58,23 +68,23 @@ async function verifyJWT(token, secret) {
             false,
             ['verify']
         );
-        
+
         const tokenData = `${headerB64}.${payloadB64}`;
-        const signature = Uint8Array.from(atob(signatureB64), c => c.charCodeAt(0));
-        
+        const signature = Uint8Array.from(base64urlDecode(signatureB64), c => c.charCodeAt(0));
+
         const isValid = await crypto.subtle.verify(
             'HMAC',
             key,
             signature,
             encoder.encode(tokenData)
         );
-        
+
         if (!isValid) {
             return null;
         }
-        
+
         // Decode payload
-        const payload = JSON.parse(atob(payloadB64));
+        const payload = JSON.parse(base64urlDecode(payloadB64));
         
         // Check expiration
         const now = Math.floor(Date.now() / 1000);
