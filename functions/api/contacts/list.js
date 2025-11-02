@@ -98,9 +98,16 @@ export const onRequestGet = createProtectedRoute(async function(context) {
         
     } catch (error) {
         console.error('Contacts list error:', error);
-        return new Response(JSON.stringify({ 
+        console.error('Error stack:', error.stack);
+        console.error('User:', user);
+        console.error('Search params:', { search, sortBy, sortOrder, page: validatedPage, limit: validatedLimit });
+
+        return new Response(JSON.stringify({
             error: 'Failed to fetch contacts',
-            details: error.message 
+            details: error.message,
+            stack: error.stack,
+            user: user?.google_id,
+            timestamp: new Date().toISOString()
         }), {
             status: 500,
             headers: { 'Content-Type': 'application/json' },
