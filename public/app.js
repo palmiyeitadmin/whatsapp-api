@@ -99,7 +99,7 @@ const translations = {
         'provider-preferences-section': 'Sağlayıcı Tercihleri',
         'contact-modal-info-title': 'Profesyonel ipuçları',
         'contact-modal-info-detail-1': 'Ülke kodu dahil tam numarayı eklediğinizden emin olun.',
-        'contact-modal-info-detail-2': '@userinfobot ile Telegram sohbet ID'nizi kolayca bulun.',
+        'contact-modal-info-detail-2': '@userinfobot ile Telegram sohbet ID\'nizi kolayca bulun.',
         'cancel': 'İptal',
         'add-contact': 'Kişi Ekle',
         'no-contacts-found': 'Kişi bulunamadı',
