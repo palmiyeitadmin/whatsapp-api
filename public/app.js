@@ -52,6 +52,181 @@ let totalContacts = 0;
 let currentSearch = '';
 let isLoadingMore = false;
 let searchTimeout;
+let currentLanguage = 'tr'; // Default to Turkish
+
+// Translation object
+const translations = {
+    tr: {
+        'welcome-title': 'CF-Infobip Broadcaster\'a Hoş Geldiniz',
+        'welcome-subtitle': 'Başlamak için Google hesabınızla giriş yapın',
+        'signin-google': 'Google ile Giriş Yap',
+        'total-contacts': 'Toplam Kişi',
+        'import-contacts': 'Kişileri İçe Aktar',
+        'manage': 'Yönet',
+        'total-campaigns': 'Toplam Kampanya',
+        'create': 'Oluştur',
+        'messages-sent': 'Gönderilen Mesajlar',
+        'send-message': 'Mesaj Gönder',
+        'view-logs': 'Logları Görüntüle',
+        'contacts-title': 'Kişiler',
+        'select-all': 'Tümünü Seç',
+        'deselect-all': 'Seçimi Kaldır',
+        'search-contacts': 'Kişi ara...',
+        'loading-contacts': 'Kişiler yükleniyor...',
+        'load-more': 'Daha Fazla Kişi Yükle',
+        'add-new-contact': 'Yeni Kişi Ekle',
+        'compose-message': 'Mesaj Oluştur',
+        'messaging-provider': 'Mesajlaşma Sağlayıcısı',
+        'selected': 'Seçilen',
+        'contacts': 'kişi',
+        'message-content': 'Mesaj İçeriği',
+        'characters': 'karakter',
+        'preview': 'Önizleme',
+        'clear': 'Temizle',
+        'send-message-btn': 'Mesaj Gönder',
+        'message-preview-placeholder': 'Mesaj önizlemesi burada görünecek...',
+        'add-new-contact-title': 'Yeni Kişi Ekle',
+        'contact-name': 'Ad',
+        'contact-email': 'E-posta',
+        'preferred-provider': 'Tercih Edilen Sağlayıcı',
+        'whatsapp-phone': 'WhatsApp Telefon Numarası',
+        'country-code-hint': 'Ülke kodunu ekleyin (örn: +90)',
+        'telegram-chat-id': 'Telegram Sohbet ID',
+        'telegram-id-hint': 'Sohbet ID\'nizi @userinfobot\'dan alın',
+        'telegram-username': 'Telegram Kullanıcı Adı',
+        'cancel': 'İptal',
+        'add-contact': 'Kişi Ekle',
+        'no-contacts-found': 'Kişi bulunamadı',
+        'import-from-google': 'Google\'dan İçe Aktar',
+        'retry': 'Tekrar Dene',
+        'failed-to-load-contacts': 'Kişiler yüklenemedi',
+        'adding-contact': 'Kişi ekleniyor...',
+        'contact-added-successfully': 'Kişi başarıyla eklendi!',
+        'failed-to-add-contact': 'Kişi eklenemedi',
+        'please-select-at-least-one-contact': 'Lütfen en az bir kişi seçin',
+        'please-enter-a-message': 'Lütfen bir mesaj girin',
+        'message-too-long': 'Mesaj çok uzun',
+        'sending-messages': 'Mesajlar gönderiliyor...',
+        'all-messages-sent-successfully': 'Tüm mesajlar başarıyla gönderildi!',
+        'sent': 'gönderildi',
+        'failed': 'gönderilemedi',
+        'failed-to-send-messages': 'Mesajlar gönderilemedi',
+        'logged-out-successfully': 'Başarıyla çıkış yapıldı',
+        'error-logging-out': 'Çıkış yapılırken hata',
+        'contacts-management-coming-soon': 'Kişi yönetimi yakında!',
+        'campaign-creation-coming-soon': 'Kampanya oluşturma yakında!',
+        'campaign-management-coming-soon': 'Kampanya yönetimi yakında!',
+        'message-logs-coming-soon': 'Mesaj logları yakında!',
+        'showing-count': '{showing} / {total} kişi gösteriliyor',
+        'new-contacts-imported': 'yeni kişi içe aktarıldı',
+        'contacts-updated': 'kişi güncellendi',
+        'loading': 'Yükleniyor...'
+    },
+    en: {
+        'welcome-title': 'Welcome to CF-Infobip Broadcaster',
+        'welcome-subtitle': 'Sign in with your Google account to get started',
+        'signin-google': 'Sign in with Google',
+        'total-contacts': 'Total Contacts',
+        'import-contacts': 'Import Contacts',
+        'manage': 'Manage',
+        'total-campaigns': 'Total Campaigns',
+        'create': 'Create',
+        'messages-sent': 'Messages Sent',
+        'send-message': 'Send Message',
+        'view-logs': 'View Logs',
+        'contacts-title': 'Contacts',
+        'select-all': 'Select All',
+        'deselect-all': 'Deselect All',
+        'search-contacts': 'Search contacts...',
+        'loading-contacts': 'Loading contacts...',
+        'load-more': 'Load More Contacts',
+        'add-new-contact': 'Add New Contact',
+        'compose-message': 'Compose Message',
+        'messaging-provider': 'Messaging Provider',
+        'selected': 'Selected',
+        'contacts': 'contacts',
+        'message-content': 'Message Content',
+        'characters': 'characters',
+        'preview': 'Preview',
+        'clear': 'Clear',
+        'send-message-btn': 'Send Message',
+        'message-preview-placeholder': 'Message preview will appear here...',
+        'add-new-contact-title': 'Add New Contact',
+        'contact-name': 'Name',
+        'contact-email': 'Email',
+        'preferred-provider': 'Preferred Provider',
+        'whatsapp-phone': 'WhatsApp Phone Number',
+        'country-code-hint': 'Include country code (e.g., +90)',
+        'telegram-chat-id': 'Telegram Chat ID',
+        'telegram-id-hint': 'Get your chat ID from @userinfobot',
+        'telegram-username': 'Telegram Username',
+        'cancel': 'Cancel',
+        'add-contact': 'Add Contact',
+        'no-contacts-found': 'No contacts found',
+        'import-from-google': 'Import from Google',
+        'retry': 'Retry',
+        'failed-to-load-contacts': 'Failed to load contacts',
+        'adding-contact': 'Adding contact...',
+        'contact-added-successfully': 'Contact added successfully!',
+        'failed-to-add-contact': 'Failed to add contact',
+        'please-select-at-least-one-contact': 'Please select at least one contact',
+        'please-enter-a-message': 'Please enter a message',
+        'message-too-long': 'Message is too long',
+        'sending-messages': 'Sending messages...',
+        'all-messages-sent-successfully': 'All messages sent successfully!',
+        'sent': 'sent',
+        'failed': 'failed',
+        'failed-to-send-messages': 'Failed to send messages',
+        'logged-out-successfully': 'Logged out successfully',
+        'error-logging-out': 'Error logging out',
+        'contacts-management-coming-soon': 'Contacts management coming soon!',
+        'campaign-creation-coming-soon': 'Campaign creation coming soon!',
+        'campaign-management-coming-soon': 'Campaign management coming soon!',
+        'message-logs-coming-soon': 'Message logs coming soon!'
+    }
+};
+
+// Get translation function
+function t(key) {
+    return translations[currentLanguage][key] || key;
+}
+
+// Update all text elements with current language
+function updateLanguage() {
+    // Update all elements with data-tr attributes
+    document.querySelectorAll('[data-tr]').forEach(element => {
+        const key = element.getAttribute('data-tr');
+        if (key && translations[currentLanguage][key]) {
+            element.textContent = translations[currentLanguage][key];
+        }
+    });
+    
+    // Update placeholders
+    document.querySelectorAll('[data-tr-placeholder]').forEach(element => {
+        const key = element.getAttribute('data-tr-placeholder');
+        if (key && translations[currentLanguage][key]) {
+            element.placeholder = translations[currentLanguage][key];
+        }
+    });
+    
+    // Update dynamic content
+    updateDynamicContent();
+}
+
+// Update dynamic content that changes based on state
+function updateDynamicContent() {
+    // Update contact count info
+    const countInfo = document.getElementById('contacts-count-info');
+    if (countInfo && allContacts.length > 0) {
+        countInfo.textContent = t('showing-count').replace('{count}', allContacts.length).replace('{total}', totalContacts);
+    }
+    
+    // Update selected contacts display
+    const selectedCountElement = document.getElementById('selected-count');
+    if (selectedCountElement) {
+        selectedCountElement.nextSibling.textContent = ` ${t('contacts')}`;
+    }
+}
 
 // Initialize the app
 document.addEventListener('DOMContentLoaded', function() {
@@ -65,19 +240,19 @@ function setupEventListeners() {
     
     // Dashboard buttons
     document.getElementById('manage-contacts-btn')?.addEventListener('click', () => {
-        showNotification('Contacts management coming soon!', 'info');
+        showNotification(t('contacts-management-coming-soon'), 'info');
     });
     
     document.getElementById('create-campaign-btn')?.addEventListener('click', () => {
-        showNotification('Campaign creation coming soon!', 'info');
+        showNotification(t('campaign-creation-coming-soon'), 'info');
     });
     
     document.getElementById('manage-campaigns-btn')?.addEventListener('click', () => {
-        showNotification('Campaign management coming soon!', 'info');
+        showNotification(t('campaign-management-coming-soon'), 'info');
     });
     
     document.getElementById('view-logs-btn')?.addEventListener('click', () => {
-        showNotification('Message logs coming soon!', 'info');
+        showNotification(t('message-logs-coming-soon'), 'info');
     });
     
     // Contacts management
@@ -106,6 +281,10 @@ function setupEventListeners() {
     contactProviderRadios.forEach(radio => {
         radio.addEventListener('change', handleContactProviderChange);
     });
+    
+    // Language selector
+    const languageSelector = document.getElementById('language-selector');
+    languageSelector?.addEventListener('change', handleLanguageChange);
     
     // Provider change handlers
     providerRadios.forEach(radio => {
@@ -150,7 +329,16 @@ function showDashboard() {
     loginSection.classList.add('hidden');
     dashboardSection.classList.remove('hidden');
     updateAuthContainer(true);
+    updateLanguage(); // Apply language settings
     loadContacts();
+}
+
+// Handle language change
+function handleLanguageChange(e) {
+    currentLanguage = e.target.value;
+    updateLanguage();
+    // Save language preference to localStorage
+    localStorage.setItem('preferred-language', currentLanguage);
 }
 
 // Contacts management functions
@@ -188,8 +376,8 @@ async function loadContacts(search = '', page = 1, append = false) {
         console.error('Error loading contacts:', error);
         contactsList.innerHTML = `
             <div class="text-center text-red-500 py-8">
-                <p>Failed to load contacts</p>
-                <button onclick="loadContacts()" class="mt-2 text-blue-600 hover:text-blue-800">Retry</button>
+                <p>${t('failed-to-load-contacts')}</p>
+                <button onclick="loadContacts()" class="mt-2 text-blue-600 hover:text-blue-800">${t('retry')}</button>
             </div>
         `;
     }
@@ -200,8 +388,8 @@ function renderContactsList(contacts) {
         // Show empty state only on first page
         contactsList.innerHTML = `
             <div class="text-center text-gray-500 py-8">
-                <p>No contacts found</p>
-                <button onclick="importContacts()" class="mt-2 text-blue-600 hover:text-blue-800">Import from Google</button>
+                <p>${t('no-contacts-found')}</p>
+                <button onclick="importContacts()" class="mt-2 text-blue-600 hover:text-blue-800">${t('import-from-google')}</button>
             </div>
         `;
         return;
@@ -256,10 +444,10 @@ function updateLoadMoreButton() {
         if (currentPage < totalPages) {
             loadMoreContainer.classList.remove('hidden');
             loadMoreBtn.disabled = isLoadingMore;
-            loadMoreBtn.textContent = isLoadingMore ? 'Loading...' : 'Load More Contacts';
+            loadMoreBtn.textContent = isLoadingMore ? t('loading') : t('load-more');
             
             const showingCount = allContacts.length;
-            countInfo.textContent = `Showing ${showingCount} of ${totalContacts} contacts`;
+            countInfo.textContent = `${t('showing-count').replace('{showing}', showingCount).replace('{total}', totalContacts)}`;
         } else {
             loadMoreContainer.classList.add('hidden');
         }
