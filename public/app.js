@@ -337,7 +337,7 @@ function setupEventListeners() {
     loadMoreBtn?.addEventListener('click', loadMoreContacts);
     
     // Add contact modal
-    const addContactBtn = document.getElementById('add-contact-btn');
+    const addContactBtn = document.getElementById('add-contact-modal-btn');
     const closeAddContactModalBtn = document.getElementById('close-add-contact-modal');
     const cancelAddContactBtn = document.getElementById('cancel-add-contact');
     const addContactForm = document.getElementById('add-contact-form');
