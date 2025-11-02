@@ -196,7 +196,13 @@ async function importContactsFromGoogle(accessToken, userId, env) {
             console.log(`Executing batch ${batchNum}/${totalBatches}: ${batch.length} operations`);
             
             try {
-                await env.CF_INFOBIP_DB.batch(batch);
+                if (typeof env.CF_INFOBIP_DB.batch === 'function') {
+                    await env.CF_INFOBIP_DB.batch(batch);
+                } else {
+                    for (const statement of batch) {
+                        await statement.run();
+                    }
+                }
                 console.log(`Batch ${batchNum} completed successfully`);
                 
                 // Small delay between batches to avoid overwhelming the database
