@@ -14,7 +14,7 @@ name = "cf-infobip-broadcaster-dev"
 [[d1_databases]]
 binding = "CF_INFOBIP_DB"
 database_name = "cf-infobip-db"
-database_id = "your-database-id-here"
+database_id = "8a166d43-24e4-48a3-8c6a-9a41c5437506"
 
 # Environment variables
 [vars]
