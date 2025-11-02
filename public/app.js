@@ -120,7 +120,37 @@ const translations = {
         'showing-count': '{showing} / {total} kişi gösteriliyor',
         'new-contacts-imported': 'yeni kişi içe aktarıldı',
         'contacts-updated': 'kişi güncellendi',
-        'loading': 'Yükleniyor...'
+        'loading': 'Yükleniyor...',
+        // Additional hardcoded strings that need translation
+        'unknown': 'Bilinmeyen',
+        'no-contacts-selected': 'Hiç kişi seçilmedi',
+        'importing-contacts-google': 'Google\'dan kişiler içe aktarılıyor...',
+        'import-failed': 'İçe aktarım başarısız oldu',
+        'please-sign-out-sign-in': 'Lütfen kişi erişim izni vermek için çıkış yapıp tekrar Google ile giriş yapın',
+        'sign-out': 'Çıkış Yap',
+        'failed-to-load-more-contacts': 'Daha fazla kişi yüklenemedi',
+        'welcome-user': 'Hoş Geldiniz,',
+        'logout': 'Çıkış Yap',
+        'message-preview-telegram': 'Mesaj önizlemesi burada görünecek...',
+        'message-preview-whatsapp': 'Mesaj önizlemesi burada görünecek...',
+        'characters-limit': '{length} / {limit} karakter',
+        'messages-sent-count': 'Mesajlar gönderildi: {sent}/{total}',
+        'sent-failed-count': '{sent} gönderildi, {failed} başarısız',
+        'all-messages-sent': 'Tüm mesajlar başarıyla gönderildi!',
+        'authentication-required': 'Kimlik doğrulaması gerekiyor',
+        'imported-updated-count': '{imported} yeni kişi içe aktarıldı, {updated} kişi güncellendi',
+        'import-failed-with-status': 'İçe aktarım başarısız oldu (durum {status})',
+        'message-too-long-limit': 'Mesaj çok uzun (maksimum {limit} karakter)',
+        'failed-to-send-messages-error': 'Mesajlar gönderilemedi: {error}',
+        'refresh-token-issue': 'Lütfen kişi erişim izni vermek için çıkış yapıp tekrar Google ile giriş yapın',
+        'contact-creation-failed': 'Kişi eklenemedi: {error}',
+        // Placeholder translations
+        'message-content-placeholder': 'Mesajınızı buraya yazın...',
+        'name-placeholder': 'Mehmet Yılmaz',
+        'email-placeholder': 'mehmet@example.com',
+        'phone-placeholder': '+905551234567',
+        'telegram-id-placeholder': '123456789',
+        'telegram-username-placeholder': '@kullaniciadi'
     },
     en: {
         'welcome-title': 'Welcome to CF-Infobip Broadcaster',
@@ -182,7 +212,37 @@ const translations = {
         'contacts-management-coming-soon': 'Contacts management coming soon!',
         'campaign-creation-coming-soon': 'Campaign creation coming soon!',
         'campaign-management-coming-soon': 'Campaign management coming soon!',
-        'message-logs-coming-soon': 'Message logs coming soon!'
+        'message-logs-coming-soon': 'Message logs coming soon!',
+        // Additional hardcoded strings that need translation
+        'unknown': 'Unknown',
+        'no-contacts-selected': 'No contacts selected',
+        'importing-contacts-google': 'Importing contacts from Google...',
+        'import-failed': 'Import failed',
+        'please-sign-out-sign-in': 'Please sign out and sign in again with Google to grant contacts access permission',
+        'sign-out': 'Sign Out',
+        'failed-to-load-more-contacts': 'Failed to load more contacts',
+        'welcome-user': 'Welcome,',
+        'logout': 'Logout',
+        'message-preview-telegram': 'Message preview will appear here...',
+        'message-preview-whatsapp': 'Message preview will appear here...',
+        'characters-limit': '{length} / {limit} characters',
+        'messages-sent-count': 'Messages sent: {sent}/{total}',
+        'sent-failed-count': '{sent} sent, {failed} failed',
+        'all-messages-sent': 'All messages sent successfully!',
+        'authentication-required': 'Authentication required',
+        'imported-updated-count': 'Imported {imported} new contacts, updated {updated}',
+        'import-failed-with-status': 'Import failed (status {status})',
+        'message-too-long-limit': 'Message is too long (max {limit} characters)',
+        'failed-to-send-messages-error': 'Failed to send messages: {error}',
+        'refresh-token-issue': 'Please sign out and sign in again with Google to grant contacts access permission',
+        'contact-creation-failed': 'Failed to add contact: {error}',
+        // Placeholder translations
+        'message-content-placeholder': 'Type your message here...',
+        'name-placeholder': 'John Doe',
+        'email-placeholder': 'john@example.com',
+        'phone-placeholder': '+15551234567',
+        'telegram-id-placeholder': '123456789',
+        'telegram-username-placeholder': '@username'
     }
 };
 
@@ -230,6 +290,17 @@ function updateDynamicContent() {
 
 // Initialize the app
 document.addEventListener('DOMContentLoaded', function() {
+    // Load saved language preference
+    const savedLanguage = localStorage.getItem('preferred-language');
+    if (savedLanguage && ['tr', 'en'].includes(savedLanguage)) {
+        currentLanguage = savedLanguage;
+        // Update language selector
+        const languageSelector = document.getElementById('language-selector');
+        if (languageSelector) {
+            languageSelector.value = currentLanguage;
+        }
+    }
+    
     checkAuthStatus();
     setupEventListeners();
 });
@@ -406,7 +477,7 @@ function renderContactsList(contacts) {
                        ${selectedContacts.has(contact.id) ? 'checked' : ''}
                        onchange="toggleContactSelection(${contact.id})">
                 <label for="contact-${contact.id}" class="flex-1 cursor-pointer">
-                    <div class="font-medium text-gray-900">${contact.name || 'Unknown'}</div>
+                    <div class="font-medium text-gray-900">${contact.name || t('unknown')}</div>
                     <div class="text-sm text-gray-500">${contact.phone_number}</div>
                     ${contact.email ? `<div class="text-xs text-gray-400">${contact.email}</div>` : ''}
                 </label>
@@ -425,7 +496,7 @@ function renderContactsList(contacts) {
                        ${selectedContacts.has(contact.id) ? 'checked' : ''}
                        onchange="toggleContactSelection(${contact.id})">
                 <label for="contact-${contact.id}" class="flex-1 cursor-pointer">
-                    <div class="font-medium text-gray-900">${contact.name || 'Unknown'}</div>
+                    <div class="font-medium text-gray-900">${contact.name || t('unknown')}</div>
                     <div class="text-sm text-gray-500">${contact.phone_number}</div>
                     ${contact.email ? `<div class="text-xs text-gray-400">${contact.email}</div>` : ''}
                 </label>
@@ -465,7 +536,7 @@ async function loadMoreContacts() {
         await loadContacts(currentSearch, currentPage + 1, true);
     } catch (error) {
         console.error('Error loading more contacts:', error);
-        showNotification('Failed to load more contacts', 'error');
+        showNotification(t('failed-to-load-more-contacts'), 'error');
     } finally {
         isLoadingMore = false;
         updateLoadMoreButton();
@@ -499,14 +570,14 @@ function updateSelectedContactsDisplay() {
     selectedCount.textContent = selectedContacts.size;
     
     if (selectedContacts.size === 0) {
-        selectedContactsDiv.innerHTML = '<p class="text-gray-500 text-sm">No contacts selected</p>';
+        selectedContactsDiv.innerHTML = `<p class="text-gray-500 text-sm">${t('no-contacts-selected')}</p>`;
         return;
     }
     
     const selectedContactsData = allContacts.filter(contact => selectedContacts.has(contact.id));
     selectedContactsDiv.innerHTML = selectedContactsData.map(contact => `
         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-            ${contact.name || 'Unknown'}
+            ${contact.name || t('unknown')}
             <button onclick="removeSelectedContact(${contact.id})" class="ml-1 text-blue-600 hover:text-blue-800">×</button>
         </span>
     `).join('');
@@ -525,7 +596,7 @@ function removeSelectedContact(contactId) {
 
 async function importContacts() {
     try {
-        showNotification('Importing contacts from Google...', 'info');
+        showNotification(t('importing-contacts-google'), 'info');
         
         const response = await authenticatedFetch('/api/contacts/import', {
             method: 'POST'
@@ -545,11 +616,11 @@ async function importContacts() {
                 data?.details ||
                 data?.error ||
                 rawBody ||
-                `Import failed (status ${response.status})`;
+                t('import-failed-with-status').replace('{status}', response.status);
             throw new Error(message);
         }
 
-        showNotification(`Imported ${data.imported} new contacts, updated ${data.updated}`, 'success');
+        showNotification(t('imported-updated-count').replace('{imported}', data.imported).replace('{updated}', data.updated), 'success');
         loadContacts(currentSearch, 1, false); // Reload the contacts list
         loadDashboardData(); // Update the count
     } catch (error) {
@@ -557,10 +628,10 @@ async function importContacts() {
         
         // Check if it's a refresh token issue
         if (error.message.includes('refresh token') || error.message.includes('re-authenticate')) {
-            showNotification('Please sign out and sign in again with Google to grant contacts access permission.', 'error');
+            showNotification(t('refresh-token-issue'), 'error');
             // Add a button to sign out
             const logoutBtn = document.createElement('button');
-            logoutBtn.textContent = 'Sign Out';
+            logoutBtn.textContent = t('sign-out');
             logoutBtn.className = 'mt-2 bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded';
             logoutBtn.onclick = logout;
             
@@ -572,7 +643,7 @@ async function importContacts() {
                 }
             }, 100);
         } else {
-            showNotification(`Import failed: ${error.message}`, 'error');
+            showNotification(t('import-failed') + ': ' + error.message, 'error');
         }
     }
 }
@@ -615,7 +686,7 @@ function handleMessageInput() {
     const limit = PROVIDER_LIMITS[selectedProvider];
 
     // Update character count
-    messageCount.textContent = `${length} / ${limit} characters`;
+    messageCount.textContent = t('characters-limit').replace('{length}', length).replace('{limit}', limit);
 
     // Update character count color
     if (length > limit) {
@@ -641,9 +712,9 @@ function handleMessageInput() {
         }
     } else {
         if (selectedProvider === 'telegram') {
-            previewElement.innerHTML = '<p class="text-gray-300 italic">Message preview will appear here...</p>';
+            previewElement.innerHTML = `<p class="text-gray-300 italic">${t('message-preview-telegram')}</p>`;
         } else {
-            previewElement.innerHTML = '<p class="text-gray-400 italic">Message preview will appear here...</p>';
+            previewElement.innerHTML = `<p class="text-gray-400 italic">${t('message-preview-whatsapp')}</p>`;
         }
     }
 
@@ -673,24 +744,24 @@ function clearMessage() {
 
 async function sendMessage() {
     if (selectedContacts.size === 0) {
-        showNotification('Please select at least one contact', 'error');
+        showNotification(t('please-select-at-least-one-contact'), 'error');
         return;
     }
     
     const message = messageContent.value.trim();
     if (!message) {
-        showNotification('Please enter a message', 'error');
+        showNotification(t('please-enter-a-message'), 'error');
         return;
     }
     
     const limit = PROVIDER_LIMITS[selectedProvider];
     if (message.length > limit) {
-        showNotification(`Message is too long (max ${limit} characters)`, 'error');
+        showNotification(t('message-too-long-limit').replace('{limit}', limit), 'error');
         return;
     }
     
     try {
-        sendStatus.textContent = 'Sending messages...';
+        sendStatus.textContent = t('sending-messages');
         sendMessageBtnMain.disabled = true;
         
         const recipients = Array.from(selectedContacts).map(id => ({ id }));
@@ -708,13 +779,13 @@ async function sendMessage() {
         
         if (data.success) {
             const { sent, failed, total } = data.summary;
-            showNotification(`Messages sent: ${sent}/${total}`, sent === total ? 'success' : 'warning');
+            showNotification(t('messages-sent-count').replace('{sent}', sent).replace('{total}', total), sent === total ? 'success' : 'warning');
             
             if (failed > 0) {
-                sendStatus.textContent = `${sent} sent, ${failed} failed`;
+                sendStatus.textContent = t('sent-failed-count').replace('{sent}', sent).replace('{failed}', failed);
                 sendStatus.classList.add('text-yellow-600');
             } else {
-                sendStatus.textContent = 'All messages sent successfully!';
+                sendStatus.textContent = t('all-messages-sent');
                 sendStatus.classList.add('text-green-600');
             }
             
@@ -729,8 +800,8 @@ async function sendMessage() {
         }
     } catch (error) {
         console.error('Send error:', error);
-        showNotification(`Failed to send messages: ${error.message}`, 'error');
-        sendStatus.textContent = 'Failed to send messages';
+        showNotification(t('failed-to-send-messages-error').replace('{error}', error.message), 'error');
+        sendStatus.textContent = t('failed-to-send-messages');
         sendStatus.classList.add('text-red-600');
     } finally {
         sendMessageBtnMain.disabled = false;
@@ -753,9 +824,9 @@ function escapeHtml(text) {
 function updateAuthContainer(authenticated) {
     if (authenticated && currentUser) {
         authContainer.innerHTML = `
-            <span class="text-gray-700">Welcome, ${currentUser.name || currentUser.email}</span>
+            <span class="text-gray-700">${t('welcome-user')} ${currentUser.name || currentUser.email}</span>
             <button id="logout-btn" class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded">
-                Logout
+                ${t('logout')}
             </button>
         `;
         document.getElementById('logout-btn').addEventListener('click', logout);
@@ -813,7 +884,7 @@ async function saveContact(e) {
     }
     
     try {
-        showNotification('Adding contact...', 'info');
+        showNotification(t('adding-contact'), 'info');
         
         const response = await authenticatedFetch('/api/contacts/create', {
             method: 'POST',
@@ -823,13 +894,13 @@ async function saveContact(e) {
         const data = await response.json();
         
         if (data.success) {
-            showNotification('Contact added successfully!', 'success');
+            showNotification(t('contact-added-successfully'), 'success');
             hideAddContactModal();
             // Reload contacts list
             loadContacts(currentSearch, 1, false);
             loadDashboardData(); // Update contact count
         } else {
-            throw new Error(data.error || 'Failed to add contact');
+            throw new Error(data.error || t('failed-to-add-contact'));
         }
     } catch (error) {
         console.error('Save contact error:', error);
@@ -877,13 +948,13 @@ async function logout() {
             currentUser = null;
             isAuthenticated = false;
             showLoginSection();
-            showNotification('Logged out successfully', 'success');
+            showNotification(t('logged-out-successfully'), 'success');
         } else {
-            showNotification('Error logging out', 'error');
+            showNotification(t('error-logging-out'), 'error');
         }
     } catch (error) {
         console.error('Logout error:', error);
-        showNotification('Error logging out', 'error');
+        showNotification(t('error-logging-out'), 'error');
     }
 }
 
@@ -959,7 +1030,7 @@ async function authenticatedFetch(url, options = {}) {
     if (response.status === 401) {
         // Redirect to login if unauthorized
         showLoginSection();
-        throw new Error('Authentication required');
+        throw new Error(t('authentication-required'));
     }
     
     return response;
