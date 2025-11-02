@@ -1,5 +1,6 @@
 # Cloudflare Pages redirects
-/functions/* /functions/:splat 200
+# Note: Cloudflare Pages Functions automatically handle /functions/* routes
+# No need to manually redirect them
 
 # API routes
 /api/* /functions/api/:splat 200
@@ -7,6 +8,10 @@
 # Auth routes
 /auth/* /functions/auth/:splat 200
 
-# Static files (serve from root)
-/* /index.html 200
+# Fallback to index.html for client-side routing (SPA)
+# This ensures any unmatched route serves index.html
+/dashboard /index.html 200
+/contacts /index.html 200
+/campaigns /index.html 200
+/analytics /index.html 200
 
