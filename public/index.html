@@ -4,20 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CF-Infobip Broadcaster - Palmiye</title>
+    
+    <!-- Google Fonts - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    
+    <!-- Custom Styles -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body class="bg-gray-50 min-h-screen">
     <!-- Header -->
-    <header class="bg-white shadow">
+    <header class="shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
-                    <h1 class="text-xl font-semibold text-gray-900">CF-Infobip Broadcaster - Palmiye</h1>
+                    <h1 class="text-xl font-bold">CF-Infobip Broadcaster - Palmiye</h1>
                 </div>
                 <div class="flex items-center">
                     <!-- Language Selector -->
-                    <select id="language-selector" class="mr-4 px-3 py-1 border border-gray-300 rounded-md text-sm">
+                    <select id="language-selector" class="mr-4">
                         <option value="tr">Türkçe</option>
                         <option value="en">English</option>
                     </select>
@@ -33,12 +42,17 @@
     <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <!-- Login Section -->
         <div id="login-section" class="hidden">
-            <div class="flex justify-center items-center h-96">
-                <div class="text-center">
-                    <h2 class="text-2xl font-bold text-gray-900 mb-4" data-tr="welcome-title">CF-Infobip Broadcaster'a Hoş Geldiniz</h2>
-                    <p class="text-gray-600 mb-6" data-tr="welcome-subtitle">Başlamak için Google hesabınızla giriş yapın</p>
-                    <button id="google-signin-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg flex items-center mx-auto">
-                        <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24">
+            <div class="flex justify-center items-center min-h-[500px]">
+                <div class="text-center max-w-md">
+                    <!-- Logo Area -->
+                    <div class="mb-8">
+                        <img src="/palmiye-logo.png" alt="Palmiye Logo" class="w-24 h-24 mx-auto mb-4">
+                        <h2 class="text-3xl font-bold mb-4" data-tr="welcome-title">CF-Infobip Broadcaster'a Hoş Geldiniz</h2>
+                        <p class="text-lg text-gray-600 mb-8" data-tr="welcome-subtitle">Başlamak için Google hesabınızla giriş yapın</p>
+                    </div>
+                    
+                    <button id="google-signin-btn" class="btn btn-primary w-full">
+                        <svg class="w-5 h-5 mr-3" viewBox="0 0 24 24">
                             <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                             <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
                             <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
@@ -54,78 +68,78 @@
         <div id="dashboard-section" class="hidden">
             <div class="px-4 py-6 sm:px-0">
                 <!-- Stats Cards -->
-                <div class="mb-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                <div class="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     <!-- Contacts Card -->
-                    <div class="bg-white overflow-hidden shadow rounded-lg">
-                        <div class="p-5">
+                    <div class="card stats-card">
+                        <div class="card-header">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0">
-                                    <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg class="stats-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0H6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                                     </svg>
                                 </div>
                                 <div class="ml-5 w-0 flex-1">
                                     <dl>
-                                        <dt class="text-sm font-medium text-gray-500 truncate" data-tr="total-contacts">Toplam Kişi</dt>
-                                        <dd class="text-lg font-medium text-gray-900" id="total-contacts">0</dd>
+                                        <dt class="stats-title" data-tr="total-contacts">Toplam Kişi</dt>
+                                        <dd class="stats-value" id="total-contacts">0</dd>
                                     </dl>
                                 </div>
                             </div>
                         </div>
-                        <div class="bg-gray-50 px-5 py-3">
-                            <div class="text-sm">
-                                <button id="import-contacts-btn" class="font-medium text-blue-700 hover:text-blue-900 mr-4" data-tr="import-contacts">Kişileri İçe Aktar</button>
-                                <button id="manage-contacts-btn" class="font-medium text-blue-700 hover:text-blue-900" data-tr="manage">Yönet</button>
+                        <div class="card-footer">
+                            <div class="flex space-x-4">
+                                <button id="import-contacts-btn" class="btn btn-secondary" data-tr="import-contacts">Kişileri İçe Aktar</button>
+                                <button id="manage-contacts-btn" class="btn btn-secondary" data-tr="manage">Yönet</button>
                             </div>
                         </div>
                     </div>
 
                     <!-- Campaigns Card -->
-                    <div class="bg-white overflow-hidden shadow rounded-lg">
-                        <div class="p-5">
+                    <div class="card stats-card">
+                        <div class="card-header">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0">
-                                    <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg class="stats-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                     </svg>
                                 </div>
                                 <div class="ml-5 w-0 flex-1">
                                     <dl>
-                                        <dt class="text-sm font-medium text-gray-500 truncate" data-tr="total-campaigns">Toplam Kampanya</dt>
-                                        <dd class="text-lg font-medium text-gray-900" id="total-campaigns">0</dd>
+                                        <dt class="stats-title" data-tr="total-campaigns">Toplam Kampanya</dt>
+                                        <dd class="stats-value" id="total-campaigns">0</dd>
                                     </dl>
                                 </div>
                             </div>
                         </div>
-                        <div class="bg-gray-50 px-5 py-3">
-                            <div class="text-sm">
-                                <button id="create-campaign-btn" class="font-medium text-blue-700 hover:text-blue-900 mr-4" data-tr="create">Oluştur</button>
-                                <button id="manage-campaigns-btn" class="font-medium text-blue-700 hover:text-blue-900" data-tr="manage">Yönet</button>
+                        <div class="card-footer">
+                            <div class="flex space-x-4">
+                                <button id="create-campaign-btn" class="btn btn-secondary" data-tr="create">Oluştur</button>
+                                <button id="manage-campaigns-btn" class="btn btn-secondary" data-tr="manage">Yönet</button>
                             </div>
                         </div>
                     </div>
 
                     <!-- Messages Sent Card -->
-                    <div class="bg-white overflow-hidden shadow rounded-lg">
-                        <div class="p-5">
+                    <div class="card stats-card">
+                        <div class="card-header">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0">
-                                    <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg class="stats-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                                     </svg>
                                 </div>
                                 <div class="ml-5 w-0 flex-1">
                                     <dl>
-                                        <dt class="text-sm font-medium text-gray-500 truncate" data-tr="messages-sent">Gönderilen Mesajlar</dt>
-                                        <dd class="text-lg font-medium text-gray-900" id="total-messages">0</dd>
+                                        <dt class="stats-title" data-tr="messages-sent">Gönderilen Mesajlar</dt>
+                                        <dd class="stats-value" id="total-messages">0</dd>
                                     </dl>
                                 </div>
                             </div>
                         </div>
-                        <div class="bg-gray-50 px-5 py-3">
-                            <div class="text-sm">
-                                <button id="send-message-btn" class="font-medium text-blue-700 hover:text-blue-900 mr-4" data-tr="send-message">Mesaj Gönder</button>
-                                <button id="view-logs-btn" class="font-medium text-blue-700 hover:text-blue-900" data-tr="view-logs">Logları Görüntüle</button>
+                        <div class="card-footer">
+                            <div class="flex space-x-4">
+                                <button id="send-message-btn" class="btn btn-primary" data-tr="send-message">Mesaj Gönder</button>
+                                <button id="view-logs-btn" class="btn btn-secondary" data-tr="view-logs">Logları Görüntüle</button>
                             </div>
                         </div>
                     </div>
@@ -135,84 +149,83 @@
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <!-- Contacts Panel -->
                     <div class="lg:col-span-1">
-                        <div class="bg-white shadow rounded-lg">
-                            <div class="px-4 py-5 sm:p-6">
+                        <div class="contacts-panel">
+                            <div class="contacts-header">
                                 <div class="flex justify-between items-center mb-4">
-                                    <h3 class="text-lg leading-6 font-medium text-gray-900" data-tr="contacts-title">Kişiler</h3>
+                                    <h3 class="text-lg font-bold" data-tr="contacts-title">Kişiler</h3>
                                     <div class="flex space-x-2">
-                                        <button id="select-all-contacts" class="text-sm text-blue-600 hover:text-blue-800" data-tr="select-all">Tümünü Seç</button>
-                                        <button id="deselect-all-contacts" class="text-sm text-gray-600 hover:text-gray-800" data-tr="deselect-all">Seçimi Kaldır</button>
+                                        <button id="select-all-contacts" class="btn btn-secondary text-sm" data-tr="select-all">Tümünü Seç</button>
+                                        <button id="deselect-all-contacts" class="btn btn-secondary text-sm" data-tr="deselect-all">Seçimi Kaldır</button>
                                     </div>
                                 </div>
                                 
                                 <!-- Search -->
                                 <div class="mb-4">
-                                    <input type="text" id="contacts-search" data-tr-placeholder="search-contacts" placeholder="Kişi ara..."
-                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                    <input type="text" id="contacts-search" 
+                                           data-tr-placeholder="search-contacts" placeholder="Kişi ara..."
+                                           class="form-input">
                                 </div>
-                                
-                                <!-- Contacts List -->
-                                <div id="contacts-list" class="space-y-2 max-h-96 overflow-y-auto">
-                                    <div class="text-center text-gray-500 py-8">
-                                        <div class="spinner mx-auto mb-4"></div>
-                                        <p data-tr="loading-contacts">Kişiler yükleniyor...</p>
-                                    </div>
+                            </div>
+                            
+                            <!-- Contacts List -->
+                            <div id="contacts-list" class="contacts-list">
+                                <div class="text-center py-8">
+                                    <div class="spinner mx-auto mb-4"></div>
+                                    <p class="text-gray-600" data-tr="loading-contacts">Kişiler yükleniyor...</p>
                                 </div>
-                                
-                                <!-- Load More Button -->
-                                <div id="load-more-container" class="mt-4 text-center hidden">
-                                    <button id="load-more-contacts" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
-                                        <span data-tr="load-more">Daha Fazla Kişi Yükle</span>
-                                    </button>
-                                    <p id="contacts-count-info" class="mt-2 text-sm text-gray-500"></p>
-                                </div>
+                            </div>
+                            
+                            <!-- Load More Button -->
+                            <div id="load-more-container" class="load-more-container hidden">
+                                <button id="load-more-contacts" class="load-more-btn">
+                                    <span data-tr="load-more">Daha Fazla Kişi Yükle</span>
+                                </button>
+                                <p id="contacts-count-info" class="mt-2 text-sm text-gray-600"></p>
+                            </div>
 
-                                <!-- Add Contact Button -->
-                                <div class="mt-4 pt-4 border-t">
-                                    <button id="add-contact-btn" class="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center justify-center">
-                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                                        </svg>
-                                        <span data-tr="add-new-contact">Yeni Kişi Ekle</span>
-                                    </button>
-                                </div>
+                            <!-- Add Contact Button -->
+                            <div class="mt-4 pt-4 border-t border-gray-200">
+                                <button id="add-contact-btn" class="btn btn-primary w-full">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                    </svg>
+                                    <span data-tr="add-new-contact">Yeni Kişi Ekle</span>
+                                </button>
                             </div>
                         </div>
                     </div>
 
                     <!-- Message Composition Panel -->
                     <div class="lg:col-span-2">
-                        <div class="bg-white shadow rounded-lg">
-                            <div class="px-4 py-5 sm:p-6">
-                                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4" data-tr="compose-message">Mesaj Oluştur</h3>
+                        <div class="message-panel">
+                            <div class="card-body">
+                                <h3 class="text-lg font-bold mb-6" data-tr="compose-message">Mesaj Oluştur</h3>
                                 
                                 <!-- Provider Selection -->
-                                <div class="mb-4">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2" data-tr="messaging-provider">
-                                        Mesajlaşma Sağlayıcısı
-                                    </label>
-                                    <div class="flex space-x-4">
-                                        <label class="inline-flex items-center">
+                                <div class="provider-selector mb-6">
+                                    <label class="form-label" data-tr="messaging-provider">Mesajlaşma Sağlayıcısı</label>
+                                    <div class="flex space-x-6">
+                                        <label class="provider-option">
                                             <input type="radio"
                                                    name="provider"
                                                    value="whatsapp"
                                                    checked
-                                                   class="form-radio h-4 w-4 text-blue-600">
-                                            <span class="ml-2 text-sm text-gray-700">
+                                                   class="form-radio">
+                                            <span class="ml-2">
                                                 <svg class="inline w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 24 24">
-                                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
                                                 </svg>
                                                 WhatsApp
                                             </span>
                                         </label>
-                                        <label class="inline-flex items-center">
+                                        <label class="provider-option">
                                             <input type="radio"
                                                    name="provider"
                                                    value="telegram"
-                                                   class="form-radio h-4 w-4 text-blue-600">
-                                            <span class="ml-2 text-sm text-gray-700">
+                                                   class="form-radio">
+                                            <span class="ml-2">
                                                 <svg class="inline w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 24 24">
-                                                    <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                                                    <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 0 12 12 12 12 0 0 0 0 12-12A12 12 0 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
                                                 </svg>
                                                 Telegram
                                             </span>
@@ -221,68 +234,62 @@
                                 </div>
                                 
                                 <!-- Selected Contacts Display -->
-                                <div class="mb-4">
-                                    <p class="text-sm text-gray-600 mb-2">
-                                        <span data-tr="selected">Seçilen</span>: <span id="selected-count" class="font-medium">0</span> <span data-tr="contacts">kişi</span>
+                                <div class="mb-6">
+                                    <p class="text-sm text-gray-600 mb-3">
+                                        <span data-tr="selected">Seçilen</span>: <span id="selected-count" class="font-bold">0</span> <span data-tr="contacts">kişi</span>
                                     </p>
-                                    <div id="selected-contacts" class="flex flex-wrap gap-2">
+                                    <div id="selected-contacts" class="selected-contacts">
                                         <!-- Selected contacts will be displayed here -->
                                     </div>
                                 </div>
                                 
                                 <!-- Message Composition -->
-                                <div class="mb-4">
-                                    <label for="message-content" class="block text-sm font-medium text-gray-700 mb-2" data-tr="message-content">
-                                        Mesaj İçeriği
-                                    </label>
+                                <div class="mb-6">
+                                    <label for="message-content" class="form-label" data-tr="message-content">Mesaj İçeriği</label>
                                     <textarea id="message-content" rows="6"
-                                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                              class="form-textarea"
                                               data-tr-placeholder="message-content-placeholder" placeholder="Mesajınızı buraya yazın..."></textarea>
-                                    <div class="mt-1 text-right">
-                                        <span id="message-count" class="text-sm text-gray-500" data-tr="characters-limit">0 / 4096 karakter</span>
+                                    <div class="mt-2 text-right">
+                                        <span id="message-count" class="character-count">0 / 4096 karakter</span>
                                     </div>
                                 </div>
                                 
                                 <!-- Message Preview -->
-                                <div class="mb-4">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2" data-tr="preview">
-                                        Önizleme
+                                <div class="mb-6">
+                                    <label class="form-label">
+                                        <span data-tr="preview">Önizleme</span>
                                         <span id="preview-provider-label" class="text-xs text-gray-500">(WhatsApp)</span>
                                     </label>
-                                    <div id="message-preview-container" class="relative">
+                                    <div class="preview-container">
                                         <!-- WhatsApp Preview -->
-                                        <div id="whatsapp-preview" class="preview-box">
-                                            <div class="p-4 bg-gray-100 rounded-lg min-h-[150px]" style="background-image: url('data:image/svg+xml,%3Csvg width=%2260%22 height=%2260%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cpath d=%22M30 0l30 30-30 30L0 30 30 0z%22 fill=%22%23e5ddd5%22 opacity=%22.1%22/%3E%3C/svg%3E'); background-size: 60px;">
-                                                <div class="flex justify-end">
-                                                    <div class="max-w-[80%] bg-[#dcf8c6] rounded-lg shadow-sm p-3">
-                                                        <div id="message-preview-whatsapp" class="text-sm text-gray-800">
-                                                            <p class="text-gray-400 italic" data-tr="message-preview-placeholder">Mesaj önizlemesi burada görünecek...</p>
-                                                        </div>
-                                                        <div class="flex items-center justify-end gap-1 mt-1">
-                                                            <span class="text-[10px] text-gray-500" id="whatsapp-time">12:00</span>
-                                                            <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 16 16">
-                                                                <path d="M12.354 4.354a.5.5 0 0 0-.708-.708L5 10.293 1.854 7.146a.5.5 0 1 0-.708.708l3.5 3.5a.5.5 0 0 0 .708 0l7-7zm-4.208 7-.896-.897.707-.707.543.543 6.646-6.647a.5.5 0 0 1 .708.708l-7 7a.5.5 0 0 1-.708 0z"/>
-                                                            </svg>
-                                                        </div>
+                                        <div id="whatsapp-preview" class="preview-box whatsapp-preview">
+                                            <div class="flex justify-end">
+                                                <div class="whatsapp-message">
+                                                    <div id="message-preview-whatsapp" class="text-sm">
+                                                        <p class="text-gray-500 italic" data-tr="message-preview-placeholder">Mesaj önizlemesi burada görünecek...</p>
+                                                    </div>
+                                                    <div class="flex items-center justify-end gap-1 mt-1">
+                                                        <span class="text-xs text-gray-500" id="whatsapp-time">12:00</span>
+                                                        <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 16 16">
+                                                            <path d="M12.354 4.354a.5.5 0 0 0-.708-.708L5 10.293 1.854 7.146a.5.5 0 1 0-.708.708l3.5 3.5a.5.5 0 0 0 .708 0l7-7zm-4.208 7-.896-.897.707-.707.543.543 6.646-6.647a.5.5 0 0 1 .708.708l-7 7a.5.5 0 0 1-.708 0z"/>
+                                                        </svg>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
 
                                         <!-- Telegram Preview -->
-                                        <div id="telegram-preview" class="preview-box hidden">
-                                            <div class="p-4 bg-[#0e1621] rounded-lg min-h-[150px]" style="background-image: url('data:image/svg+xml,%3Csvg width=%22100%22 height=%22100%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cpattern id=%22a%22 patternUnits=%22userSpaceOnUse%22 width=%2240%22 height=%2240%22%3E%3Cpath d=%22M0 0h40v40H0z%22 fill=%22%230e1621%22/%3E%3Cpath d=%22M20 0l20 20-20 20L0 20z%22 fill=%22%23151f2b%22 opacity=%22.3%22/%3E%3C/pattern%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22url(%23a)%22/%3E%3C/svg%3E');">
-                                                <div class="flex justify-end">
-                                                    <div class="max-w-[80%] bg-[#2b5278] rounded-lg shadow-md p-3">
-                                                        <div id="message-preview-telegram" class="text-sm text-white">
-                                                            <p class="text-gray-300 italic" data-tr="message-preview-placeholder">Mesaj önizlemesi burada görünecek...</p>
-                                                        </div>
-                                                        <div class="flex items-center justify-end gap-1 mt-1">
-                                                            <span class="text-[10px] text-gray-300" id="telegram-time">12:00</span>
-                                                            <svg class="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 16 16">
-                                                                <path d="M12.354 4.354a.5.5 0 0 0-.708-.708L5 10.293 1.854 7.146a.5.5 0 1 0-.708.708l3.5 3.5a.5.5 0 0 0 .708 0l7-7z"/>
-                                                            </svg>
-                                                        </div>
+                                        <div id="telegram-preview" class="preview-box telegram-preview hidden">
+                                            <div class="flex justify-end">
+                                                <div class="telegram-message">
+                                                    <div id="message-preview-telegram" class="text-sm text-white">
+                                                        <p class="text-gray-300 italic" data-tr="message-preview-placeholder">Mesaj önizlemesi burada görünecek...</p>
+                                                    </div>
+                                                    <div class="flex items-center justify-end gap-1 mt-1">
+                                                        <span class="text-xs text-gray-300" id="telegram-time">12:00</span>
+                                                        <svg class="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 16 16">
+                                                            <path d="M12.354 4.354a.5.5 0 0 0-.708-.708L5 10.293 1.854 7.146a.5.5 0 1 0-.708.708l3.5 3.5a.5.5 0 0 0 .708 0l7-7z"/>
+                                                        </svg>
                                                     </div>
                                                 </div>
                                             </div>
@@ -291,15 +298,15 @@
                                 </div>
                                 
                                 <!-- Action Buttons -->
-                                <div class="flex justify-between">
+                                <div class="flex justify-between items-center">
                                     <div class="text-sm text-gray-600">
                                         <p id="send-status"></p>
                                     </div>
-                                    <div class="space-x-3">
-                                        <button id="clear-message-btn" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                                    <div class="flex space-x-3">
+                                        <button id="clear-message-btn" class="btn btn-secondary">
                                             <span data-tr="clear">Temizle</span>
                                         </button>
-                                        <button id="send-message-btn-main" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                                        <button id="send-message-btn-main" class="btn btn-primary">
                                             <span data-tr="send-message">Mesaj Gönder</span>
                                         </button>
                                     </div>
@@ -313,90 +320,88 @@
     </main>
 
     <!-- Add Contact Modal -->
-    <div id="add-contact-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-        <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white">
-            <div class="mt-3">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg leading-6 font-medium text-gray-900" data-tr="add-new-contact-title">Yeni Kişi Ekle</h3>
-                    <button id="close-add-contact-modal" class="text-gray-400 hover:text-gray-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                        </svg>
+    <div id="add-contact-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" data-tr="add-new-contact-title">Yeni Kişi Ekle</h3>
+                <button id="close-add-contact-modal" class="modal-close">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <form id="add-contact-form" class="space-y-4">
+                <!-- Name -->
+                <div class="form-group">
+                    <label for="contact-name" class="form-label" data-tr="contact-name">Ad *</label>
+                    <input type="text" id="contact-name" required
+                           class="form-input"
+                           data-tr-placeholder="name-placeholder" placeholder="Mehmet Yılmaz">
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label for="contact-email" class="form-label" data-tr="contact-email">E-posta</label>
+                    <input type="email" id="contact-email"
+                           class="form-input"
+                           data-tr-placeholder="email-placeholder" placeholder="mehmet@example.com">
+                </div>
+
+                <!-- Preferred Provider -->
+                <div class="form-group">
+                    <label class="form-label" data-tr="preferred-provider">Tercih Edilen Sağlayıcı *</label>
+                    <div class="flex space-x-4">
+                        <label class="provider-option">
+                            <input type="radio" name="contact-provider" value="whatsapp" checked
+                                   class="form-radio">
+                            <span class="ml-2">WhatsApp</span>
+                        </label>
+                        <label class="provider-option">
+                            <input type="radio" name="contact-provider" value="telegram"
+                                   class="form-radio">
+                            <span class="ml-2">Telegram</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- WhatsApp Phone Number (shown when WhatsApp selected) -->
+                <div id="whatsapp-fields" class="form-group">
+                    <label for="contact-phone" class="form-label" data-tr="whatsapp-phone">WhatsApp Telefon Numarası *</label>
+                    <input type="tel" id="contact-phone"
+                           class="form-input"
+                           data-tr-placeholder="phone-placeholder" placeholder="+905551234567">
+                    <p class="mt-1 text-xs text-gray-500" data-tr="country-code-hint">Ülke kodunu ekleyin (örn: +90)</p>
+                </div>
+
+                <!-- Telegram Fields (shown when Telegram selected) -->
+                <div id="telegram-fields" class="hidden space-y-4">
+                    <div class="form-group">
+                        <label for="contact-telegram-id" class="form-label" data-tr="telegram-chat-id">Telegram Sohbet ID *</label>
+                        <input type="text" id="contact-telegram-id"
+                               class="form-input"
+                               data-tr-placeholder="telegram-id-placeholder" placeholder="123456789">
+                        <p class="mt-1 text-xs text-gray-500" data-tr="telegram-id-hint">Sohbet ID'nizi @userinfobot'dan alın</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-telegram-username" class="form-label" data-tr="telegram-username">Telegram Kullanıcı Adı</label>
+                        <input type="text" id="contact-telegram-username"
+                               class="form-input"
+                               data-tr-placeholder="telegram-username-placeholder" placeholder="@kullaniciadi">
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="flex justify-end space-x-3 mt-6">
+                    <button type="button" id="cancel-add-contact"
+                            class="btn btn-secondary">
+                        <span data-tr="cancel">İptal</span>
+                    </button>
+                    <button type="submit"
+                            class="btn btn-primary">
+                        <span data-tr="add-contact">Kişi Ekle</span>
                     </button>
                 </div>
-                <form id="add-contact-form" class="space-y-4">
-                    <!-- Name -->
-                    <div>
-                        <label for="contact-name" class="block text-sm font-medium text-gray-700" data-tr="contact-name">Ad *</label>
-                        <input type="text" id="contact-name" required
-                               class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                               data-tr-placeholder="name-placeholder" placeholder="Mehmet Yılmaz">
-                    </div>
-
-                    <!-- Email -->
-                    <div>
-                        <label for="contact-email" class="block text-sm font-medium text-gray-700" data-tr="contact-email">E-posta</label>
-                        <input type="email" id="contact-email"
-                               class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                               data-tr-placeholder="email-placeholder" placeholder="mehmet@example.com">
-                    </div>
-
-                    <!-- Preferred Provider -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2" data-tr="preferred-provider">Tercih Edilen Sağlayıcı *</label>
-                        <div class="flex space-x-4">
-                            <label class="inline-flex items-center">
-                                <input type="radio" name="contact-provider" value="whatsapp" checked
-                                       class="form-radio h-4 w-4 text-blue-600">
-                                <span class="ml-2 text-sm">WhatsApp</span>
-                            </label>
-                            <label class="inline-flex items-center">
-                                <input type="radio" name="contact-provider" value="telegram"
-                                       class="form-radio h-4 w-4 text-blue-600">
-                                <span class="ml-2 text-sm">Telegram</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- WhatsApp Phone Number (shown when WhatsApp selected) -->
-                    <div id="whatsapp-fields">
-                        <label for="contact-phone" class="block text-sm font-medium text-gray-700" data-tr="whatsapp-phone">WhatsApp Telefon Numarası *</label>
-                        <input type="tel" id="contact-phone"
-                               class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                               data-tr-placeholder="phone-placeholder" placeholder="+905551234567">
-                        <p class="mt-1 text-xs text-gray-500" data-tr="country-code-hint">Ülke kodunu ekleyin (örn: +90)</p>
-                    </div>
-
-                    <!-- Telegram Fields (shown when Telegram selected) -->
-                    <div id="telegram-fields" class="hidden space-y-4">
-                        <div>
-                            <label for="contact-telegram-id" class="block text-sm font-medium text-gray-700" data-tr="telegram-chat-id">Telegram Sohbet ID *</label>
-                            <input type="text" id="contact-telegram-id"
-                                   class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                   data-tr-placeholder="telegram-id-placeholder" placeholder="123456789">
-                            <p class="mt-1 text-xs text-gray-500" data-tr="telegram-id-hint">Sohbet ID'nizi @userinfobot'dan alın</p>
-                        </div>
-                        <div>
-                            <label for="contact-telegram-username" class="block text-sm font-medium text-gray-700" data-tr="telegram-username">Telegram Kullanıcı Adı</label>
-                            <input type="text" id="contact-telegram-username"
-                                   class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                   data-tr-placeholder="telegram-username-placeholder" placeholder="@kullaniciadi">
-                        </div>
-                    </div>
-
-                    <!-- Buttons -->
-                    <div class="flex justify-end space-x-3 mt-6">
-                        <button type="button" id="cancel-add-contact"
-                                class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
-                            <span data-tr="cancel">İptal</span>
-                        </button>
-                        <button type="submit"
-                                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                            <span data-tr="add-contact">Kişi Ekle</span>
-                        </button>
-                    </div>
-                </form>
-            </div>
+            </form>
         </div>
     </div>
 

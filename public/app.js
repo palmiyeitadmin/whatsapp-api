@@ -278,7 +278,7 @@ function updateDynamicContent() {
     // Update contact count info
     const countInfo = document.getElementById('contacts-count-info');
     if (countInfo && allContacts.length > 0) {
-        countInfo.textContent = t('showing-count').replace('{count}', allContacts.length).replace('{total}', totalContacts);
+        countInfo.textContent = t('showing-count').replace('{showing}', allContacts.length).replace('{total}', totalContacts);
     }
     
     // Update selected contacts display
