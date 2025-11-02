@@ -313,15 +313,25 @@ function handleMessageInput() {
         ? messagePreviewWhatsApp
         : messagePreviewTelegram;
 
+    // Update time
+    const now = new Date();
+    const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+    document.getElementById('whatsapp-time').textContent = timeString;
+    document.getElementById('telegram-time').textContent = timeString;
+
     if (content.trim()) {
         // Telegram supports HTML formatting, WhatsApp plain text
         if (selectedProvider === 'telegram') {
-            previewElement.innerHTML = `<p class="whitespace-pre-wrap">${renderTelegramPreview(content)}</p>`;
+            previewElement.innerHTML = `<p class="whitespace-pre-wrap text-white">${renderTelegramPreview(content)}</p>`;
         } else {
-            previewElement.innerHTML = `<p class="whitespace-pre-wrap">${escapeHtml(content)}</p>`;
+            previewElement.innerHTML = `<p class="whitespace-pre-wrap text-gray-800">${escapeHtml(content)}</p>`;
         }
     } else {
-        previewElement.innerHTML = '<p class="text-gray-500">Message preview will appear here...</p>';
+        if (selectedProvider === 'telegram') {
+            previewElement.innerHTML = '<p class="text-gray-300 italic">Message preview will appear here...</p>';
+        } else {
+            previewElement.innerHTML = '<p class="text-gray-400 italic">Message preview will appear here...</p>';
+        }
     }
 
     // Update send button state
