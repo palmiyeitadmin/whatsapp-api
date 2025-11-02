@@ -1,4 +1,4 @@
-// CF-Infobip Broadcaster Frontend JavaScript
+﻿// CF-Infobip Broadcaster Frontend JavaScript
 
 // Global variables
 let currentUser = null;
@@ -86,6 +86,7 @@ const translations = {
         'send-message-btn': 'Mesaj Gönder',
         'message-preview-placeholder': 'Mesaj önizlemesi burada görünecek...',
         'add-new-contact-title': 'Yeni Kişi Ekle',
+        'add-contact-subtitle': 'Kampanyalarınıza yeni kişileri hızlıca ekleyin.',
         'contact-name': 'Ad',
         'contact-email': 'E-posta',
         'preferred-provider': 'Tercih Edilen Sağlayıcı',
@@ -94,6 +95,11 @@ const translations = {
         'telegram-chat-id': 'Telegram Sohbet ID',
         'telegram-id-hint': 'Sohbet ID\'nizi @userinfobot\'dan alın',
         'telegram-username': 'Telegram Kullanıcı Adı',
+        'contact-info-section': 'Kişi Bilgileri',
+        'provider-preferences-section': 'Sağlayıcı Tercihleri',
+        'contact-modal-info-title': 'Profesyonel ipuçları',
+        'contact-modal-info-detail-1': 'Ülke kodu dahil tam numarayı eklediğinizden emin olun.',
+        'contact-modal-info-detail-2': '@userinfobot ile Telegram sohbet ID'nizi kolayca bulun.',
         'cancel': 'İptal',
         'add-contact': 'Kişi Ekle',
         'no-contacts-found': 'Kişi bulunamadı',
@@ -182,6 +188,7 @@ const translations = {
         'send-message-btn': 'Send Message',
         'message-preview-placeholder': 'Message preview will appear here...',
         'add-new-contact-title': 'Add New Contact',
+        'add-contact-subtitle': 'Quickly add new people to your campaigns.',
         'contact-name': 'Name',
         'contact-email': 'Email',
         'preferred-provider': 'Preferred Provider',
@@ -190,6 +197,11 @@ const translations = {
         'telegram-chat-id': 'Telegram Chat ID',
         'telegram-id-hint': 'Get your chat ID from @userinfobot',
         'telegram-username': 'Telegram Username',
+        'contact-info-section': 'Contact Information',
+        'provider-preferences-section': 'Provider Preferences',
+        'contact-modal-info-title': 'Helpful tips',
+        'contact-modal-info-detail-1': 'Be sure to include the full number with country code.',
+        'contact-modal-info-detail-2': 'Use @userinfobot to find the Telegram chat ID.',
         'cancel': 'Cancel',
         'add-contact': 'Add Contact',
         'no-contacts-found': 'No contacts found',
@@ -1106,3 +1118,5 @@ window.app = {
     currentUser,
     isAuthenticated
 };
+
+

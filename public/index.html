@@ -22,7 +22,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
-                    <h1 class="text-xl font-bold">CF-Infobip Broadcaster - Palmiye</h1>
+                    <img src="assets/plm-logo.png" alt="Palmiye" class="header-logo">
                 </div>
                 <div class="flex items-center">
                     <!-- Language Selector -->
@@ -320,88 +320,113 @@
     </main>
 
     <!-- Add Contact Modal -->
-    <div id="add-contact-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title" data-tr="add-new-contact-title">Yeni Kişi Ekle</h3>
-                <button id="close-add-contact-modal" class="modal-close">
+    <div id="add-contact-modal" class="modal hidden">
+        <div class="modal-content add-contact-modal">
+            <div class="modal-header add-contact-modal__header">
+                <div>
+                    <h3 class="modal-title" data-tr="add-new-contact-title">Yeni Kişi Ekle</h3>
+                    <p class="add-contact-modal__subtitle" data-tr="add-contact-subtitle">Kampanyalarınıza yeni kişileri hızla ekleyin.</p>
+                </div>
+                <button id="close-add-contact-modal" class="modal-close" type="button" aria-label="Kapat">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
                 </button>
             </div>
-            <form id="add-contact-form" class="space-y-4">
-                <!-- Name -->
-                <div class="form-group">
-                    <label for="contact-name" class="form-label" data-tr="contact-name">Ad *</label>
-                    <input type="text" id="contact-name" name="contact-name" required
-                           class="form-input"
-                           data-tr-placeholder="name-placeholder" placeholder="Mehmet Yılmaz">
-                </div>
-
-                <!-- Email -->
-                <div class="form-group">
-                    <label for="contact-email" class="form-label" data-tr="contact-email">E-posta</label>
-                    <input type="email" id="contact-email" name="contact-email"
-                           class="form-input"
-                           data-tr-placeholder="email-placeholder" placeholder="mehmet@example.com">
-                </div>
-
-                <!-- Preferred Provider -->
-                <div class="form-group">
-                    <label class="form-label" data-tr="preferred-provider">Tercih Edilen Sağlayıcı *</label>
-                    <div class="flex space-x-4">
-                        <label class="provider-option">
-                            <input type="radio" name="contact-provider" value="whatsapp" checked
-                                   class="form-radio">
-                            <span class="ml-2">WhatsApp</span>
-                        </label>
-                        <label class="provider-option">
-                            <input type="radio" name="contact-provider" value="telegram"
-                                   class="form-radio">
-                            <span class="ml-2">Telegram</span>
-                        </label>
+            <div class="add-contact-modal__body">
+                <aside class="add-contact-modal__info">
+                    <div class="add-contact-modal__info-icon" aria-hidden="true">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 21H9a4 4 0 01-4-4v-1a4 4 0 014-4h6a4 4 0 014 4v1a4 4 0 01-4 4z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 11a4 4 0 100-8 4 4 0 000 8z"/>
+                        </svg>
                     </div>
-                </div>
-
-                <!-- WhatsApp Phone Number (shown when WhatsApp selected) -->
-                <div id="whatsapp-fields" class="form-group">
-                    <label for="contact-phone" class="form-label" data-tr="whatsapp-phone">WhatsApp Telefon Numarası *</label>
-                    <input type="tel" id="contact-phone" name="contact-phone"
-                           class="form-input"
-                           data-tr-placeholder="phone-placeholder" placeholder="+905551234567">
-                    <p class="mt-1 text-xs text-gray-500" data-tr="country-code-hint">Ülke kodunu ekleyin (örn: +90)</p>
-                </div>
-
-                <!-- Telegram Fields (shown when Telegram selected) -->
-                <div id="telegram-fields" class="hidden space-y-4">
-                    <div class="form-group">
-                        <label for="contact-telegram-id" class="form-label" data-tr="telegram-chat-id">Telegram Sohbet ID *</label>
-                        <input type="text" id="contact-telegram-id" name="contact-telegram-id"
-                               class="form-input"
-                               data-tr-placeholder="telegram-id-placeholder" placeholder="123456789">
-                        <p class="mt-1 text-xs text-gray-500" data-tr="telegram-id-hint">Sohbet ID'nizi @userinfobot'dan alın</p>
+                    <h4 class="add-contact-modal__info-title" data-tr="contact-modal-info-title">Profesyonel ipuçları</h4>
+                    <ul class="add-contact-modal__tips">
+                        <li>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span data-tr="contact-modal-info-detail-1">Ülke kodu dahil tam numarayı eklediğinizden emin olun.</span>
+                        </li>
+                        <li>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span data-tr="contact-modal-info-detail-2">@userinfobot ile Telegram sohbet ID’nizi kolayca bulun.</span>
+                        </li>
+                    </ul>
+                </aside>
+                <form id="add-contact-form" class="add-contact-modal__form">
+                    <div class="add-contact-modal__section">
+                        <h4 class="add-contact-modal__section-title" data-tr="contact-info-section">Kişi Bilgileri</h4>
+                        <div class="form-grid form-grid--two">
+                            <div class="form-group">
+                                <label for="contact-name" class="form-label" data-tr="contact-name">Ad *</label>
+                                <input type="text" id="contact-name" name="contact-name" required
+                                       class="form-input"
+                                       data-tr-placeholder="name-placeholder" placeholder="Mehmet Yılmaz">
+                            </div>
+                            <div class="form-group">
+                                <label for="contact-email" class="form-label" data-tr="contact-email">E-posta</label>
+                                <input type="email" id="contact-email" name="contact-email"
+                                       class="form-input"
+                                       data-tr-placeholder="email-placeholder" placeholder="mehmet@example.com">
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="contact-telegram-username" class="form-label" data-tr="telegram-username">Telegram Kullanıcı Adı</label>
-                        <input type="text" id="contact-telegram-username" name="contact-telegram-username"
-                               class="form-input"
-                               data-tr-placeholder="telegram-username-placeholder" placeholder="@kullaniciadi">
+                    <div class="add-contact-modal__section">
+                        <h4 class="add-contact-modal__section-title" data-tr="provider-preferences-section">Sağlayıcı Tercihleri</h4>
+                        <div class="form-group">
+                            <label class="form-label" data-tr="preferred-provider">Tercih Edilen Sağlayıcı *</label>
+                            <div class="flex space-x-4">
+                                <label class="provider-option">
+                                    <input type="radio" name="contact-provider" value="whatsapp" checked
+                                           class="form-radio">
+                                    <span class="ml-2">WhatsApp</span>
+                                </label>
+                                <label class="provider-option">
+                                    <input type="radio" name="contact-provider" value="telegram"
+                                           class="form-radio">
+                                    <span class="ml-2">Telegram</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div id="whatsapp-fields" class="form-group">
+                            <label for="contact-phone" class="form-label" data-tr="whatsapp-phone">WhatsApp Telefon Numarası *</label>
+                            <input type="tel" id="contact-phone" name="contact-phone"
+                                   class="form-input"
+                                   data-tr-placeholder="phone-placeholder" placeholder="+905551234567">
+                            <p class="mt-1 text-xs text-gray-500" data-tr="country-code-hint">Ülke kodunu ekleyin (örn: +90)</p>
+                        </div>
+                        <div id="telegram-fields" class="hidden add-contact-modal__stack">
+                            <div class="form-group">
+                                <label for="contact-telegram-id" class="form-label" data-tr="telegram-chat-id">Telegram Sohbet ID *</label>
+                                <input type="text" id="contact-telegram-id" name="contact-telegram-id"
+                                       class="form-input"
+                                       data-tr-placeholder="telegram-id-placeholder" placeholder="123456789">
+                                <p class="mt-1 text-xs text-gray-500" data-tr="telegram-id-hint">Sohbet ID’nizi @userinfobot’dan alın</p>
+                            </div>
+                            <div class="form-group">
+                                <label for="contact-telegram-username" class="form-label" data-tr="telegram-username">Telegram Kullanıcı Adı</label>
+                                <input type="text" id="contact-telegram-username" name="contact-telegram-username"
+                                       class="form-input"
+                                       data-tr-placeholder="telegram-username-placeholder" placeholder="@kullaniciadi">
+                            </div>
+                        </div>
                     </div>
-                </div>
-
-                <!-- Buttons -->
-                <div class="flex justify-end space-x-3 mt-6">
-                    <button type="button" id="cancel-add-contact"
-                            class="btn btn-secondary">
-                        <span data-tr="cancel">İptal</span>
-                    </button>
-                    <button type="submit"
-                            class="btn btn-primary">
-                        <span data-tr="add-contact">Kişi Ekle</span>
-                    </button>
-                </div>
-            </form>
+                    <div class="add-contact-modal__actions">
+                        <button type="button" id="cancel-add-contact"
+                                class="btn btn-secondary">
+                            <span data-tr="cancel">İptal</span>
+                        </button>
+                        <button type="submit"
+                                class="btn btn-primary">
+                            <span data-tr="add-contact">Kişi Ekle</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
