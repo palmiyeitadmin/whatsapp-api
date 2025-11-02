@@ -1,16 +1,6 @@
 name = "cf-infobip-broadcaster"
 compatibility_date = "2023-12-01"
-account_id = "90557af92781dc3d402935390b03231b"
 pages_build_output_dir = "public"
-
-[env.production]
-name = "cf-infobip-broadcaster"
-
-[env.staging]
-name = "cf-infobip-broadcaster-staging"
-
-[env.development]
-name = "cf-infobip-broadcaster-dev"
 
 # D1 Database binding
 [[d1_databases]]
@@ -18,23 +8,14 @@ binding = "CF_INFOBIP_DB"
 database_name = "cf-infobip-db"
 database_id = "1153df23-a187-4c99-8d48-42edeb0ed734"
 
-# Environment variables
-[vars]
-GOOGLE_CLIENT_ID = ""
-GOOGLE_CLIENT_SECRET = ""
-
-# WhatsApp Provider (Infobip)
-INFOBIP_API_KEY = ""
-INFOBIP_BASE_URL = "https://api.infobip.com"
-INFOBIP_WHATSAPP_SENDER = ""
-
-# Telegram Provider
-TELEGRAM_BOT_TOKEN = ""
-TELEGRAM_API_URL = "https://api.telegram.org"
-
-JWT_SECRET = "your-jwt-secret-here"
-
-# KV namespace for sessions (optional alternative to JWT)
-# [[kv_namespaces]]
-# binding = "SESSIONS"
-# id = "your-kv-namespace-id"
+# Note: Environment variables should be set as Cloudflare Pages Environment Variables or Secrets
+# Do not define them here with [vars] as it causes conflicts with Pages deployment
+# Use Cloudflare Dashboard or wrangler pages secret put command to set:
+#   - GOOGLE_CLIENT_ID
+#   - GOOGLE_CLIENT_SECRET
+#   - INFOBIP_API_KEY
+#   - INFOBIP_BASE_URL
+#   - INFOBIP_WHATSAPP_SENDER
+#   - TELEGRAM_BOT_TOKEN
+#   - TELEGRAM_API_URL
+#   - JWT_SECRET
