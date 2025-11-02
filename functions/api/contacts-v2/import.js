@@ -3,6 +3,15 @@
 // Handles large contact lists by chunking SQL queries to avoid D1 limits
 import { createProtectedRoute } from '../../middleware/auth.js';
 
+class ImportError extends Error {
+    constructor(message, status = 500, details = {}) {
+        super(message);
+        this.name = 'ImportError';
+        this.status = status;
+        this.details = details;
+    }
+}
+
 export const onRequestPost = createProtectedRoute(async function(context) {
     const { env, user } = context;
 
@@ -32,8 +41,29 @@ export const onRequestPost = createProtectedRoute(async function(context) {
         });
 
         if (!tokenResponse.ok) {
-            const errorData = await tokenResponse.text();
-            throw new Error(`Token refresh failed: ${errorData}`);
+            const tokenError = await parseGoogleError(tokenResponse);
+            console.error('Google token refresh error:', tokenError);
+
+            const errorMessage = typeof tokenError.message === 'string' ? tokenError.message : '';
+
+            const isExpired = tokenResponse.status === 400 && (
+                tokenError.errorCode === 'invalid_grant' ||
+                errorMessage.toLowerCase().includes('invalid_grant')
+            );
+
+            throw new ImportError(
+                isExpired
+                    ? 'Your Google session expired. Please sign in again.'
+                    : 'Could not refresh Google access token.',
+                isExpired ? 409 : 502,
+                {
+                    googleStatus: tokenResponse.status,
+                    googleError: tokenError.message,
+                    errorCode: tokenError.errorCode,
+                    raw: tokenError.rawBody,
+                    reason: isExpired ? 'GOOGLE_REFRESH_TOKEN_EXPIRED' : 'GOOGLE_TOKEN_REFRESH_FAILED'
+                }
+            );
         }
 
         const tokenData = await tokenResponse.json();
@@ -53,12 +83,29 @@ export const onRequestPost = createProtectedRoute(async function(context) {
 
     } catch (error) {
         console.error('Contacts import error:', error);
-        return new Response(JSON.stringify({
-            error: 'Failed to import contacts',
-            details: error.message,
-            stack: error.stack
-        }), {
-            status: 500,
+
+        const isImportError = error instanceof ImportError;
+        const status = isImportError ? error.status : 500;
+        const meta = isImportError && typeof error.details === 'object' ? error.details : undefined;
+
+        const responseBody = {
+            success: false,
+            error: isImportError ? error.message : 'Failed to import contacts',
+            details: isImportError
+                ? (error.details?.googleError || error.details || error.message)
+                : error.message
+        };
+
+        if (meta) {
+            responseBody.meta = meta;
+        }
+
+        if (!isImportError) {
+            responseBody.stack = error.stack;
+        }
+
+        return new Response(JSON.stringify(responseBody), {
+            status,
             headers: { 'Content-Type': 'application/json' },
         });
     }
@@ -89,7 +136,26 @@ async function importContactsFromGoogle(accessToken, userId, env) {
         });
 
         if (!contactsResponse.ok) {
-            throw new Error(`Google API error: ${contactsResponse.statusText}`);
+            const apiError = await parseGoogleError(contactsResponse);
+            console.error('Google People API error:', apiError);
+
+            const status =
+                contactsResponse.status === 403 || contactsResponse.status === 401
+                    ? 403
+                    : 502;
+
+            throw new ImportError(
+                contactsResponse.status === 403
+                    ? 'Google denied access to contacts. Ensure the People API is enabled and you granted the required scopes.'
+                    : 'Failed to fetch contacts from Google.',
+                status,
+                {
+                    googleStatus: contactsResponse.status,
+                    googleError: apiError.message,
+                    errorCode: apiError.errorCode,
+                    raw: apiError.rawBody
+                }
+            );
         }
 
         const data = await contactsResponse.json();
@@ -200,6 +266,9 @@ async function importContactsFromGoogle(accessToken, userId, env) {
                     await env.CF_INFOBIP_DB.batch(batch);
                 } else {
                     for (const statement of batch) {
+                        if (typeof statement.run !== 'function') {
+                            throw new Error('Database driver does not support batch execution and statement.run() is unavailable.');
+                        }
                         await statement.run();
                     }
                 }
@@ -255,4 +324,37 @@ function parseGoogleContact(contact) {
     }
 
     return result;
+}
+
+async function parseGoogleError(response) {
+    const status = response.status;
+    const statusText = response.statusText;
+    const rawBody = await response.text();
+    let parsed;
+
+    try {
+        parsed = JSON.parse(rawBody);
+    } catch {
+        parsed = null;
+    }
+
+    const message =
+        parsed?.error_description ||
+        parsed?.error?.message ||
+        parsed?.error ||
+        statusText ||
+        rawBody;
+
+    const errorCode =
+        typeof parsed?.error === 'string'
+            ? parsed.error
+            : parsed?.error?.status || parsed?.error?.code;
+
+    return {
+        status,
+        statusText,
+        message,
+        errorCode,
+        rawBody
+    };
 }

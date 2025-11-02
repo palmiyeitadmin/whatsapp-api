@@ -14,6 +14,8 @@ describe('Contacts API', () => {
       CF_INFOBIP_DB: {
         prepare: vi.fn().mockReturnThis(),
         bind: vi.fn().mockReturnThis(),
+        batch: vi.fn().mockResolvedValue(undefined),
+        run: vi.fn().mockResolvedValue(undefined),
         all: vi.fn(),
         first: vi.fn()
       }

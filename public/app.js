@@ -244,16 +244,28 @@ async function importContacts() {
         const response = await authenticatedFetch('/api/contacts/import', {
             method: 'POST'
         });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            showNotification(`Imported ${data.imported} new contacts, updated ${data.updated}`, 'success');
-            loadContacts(); // Reload the contacts list
-            loadDashboardData(); // Update the count
-        } else {
-            throw new Error(data.error || 'Import failed');
+
+        const rawBody = await response.text();
+        let data;
+
+        try {
+            data = rawBody ? JSON.parse(rawBody) : null;
+        } catch (parseError) {
+            console.error('Failed to parse import response:', parseError, rawBody);
         }
+
+        if (!response.ok || !data?.success) {
+            const message =
+                data?.details ||
+                data?.error ||
+                rawBody ||
+                `Import failed (status ${response.status})`;
+            throw new Error(message);
+        }
+
+        showNotification(`Imported ${data.imported} new contacts, updated ${data.updated}`, 'success');
+        loadContacts(); // Reload the contacts list
+        loadDashboardData(); // Update the count
     } catch (error) {
         console.error('Import error:', error);
         showNotification(`Import failed: ${error.message}`, 'error');
