@@ -1,3 +1,12 @@
 # Cloudflare Pages redirects
-/functions/auth/google/callback / 302
+/functions/* /functions/:splat 200
+
+# API routes
+/api/* /functions/api/:splat 200
+
+# Auth routes
+/auth/* /functions/auth/:splat 200
+
+# Static files (serve from root)
+/* /index.html 200
 
