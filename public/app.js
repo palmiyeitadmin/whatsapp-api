@@ -47,6 +47,10 @@ const messagePreviewTelegram = document.getElementById('message-preview-telegram
 let allContacts = [];
 let selectedContacts = new Set();
 let currentPage = 1;
+let totalPages = 1;
+let totalContacts = 0;
+let currentSearch = '';
+let isLoadingMore = false;
 let searchTimeout;
 
 // Initialize the app
@@ -81,6 +85,10 @@ function setupEventListeners() {
     selectAllContactsBtn?.addEventListener('click', selectAllContacts);
     deselectAllContactsBtn?.addEventListener('click', deselectAllContacts);
     contactsSearch?.addEventListener('input', handleSearch);
+    
+    // Load more contacts
+    const loadMoreBtn = document.getElementById('load-more-contacts');
+    loadMoreBtn?.addEventListener('click', loadMoreContacts);
     
     // Provider change handlers
     providerRadios.forEach(radio => {
@@ -129,11 +137,11 @@ function showDashboard() {
 }
 
 // Contacts management functions
-async function loadContacts(search = '', page = 1) {
+async function loadContacts(search = '', page = 1, append = false) {
     try {
         const params = new URLSearchParams({
             page: page.toString(),
-            limit: '50',
+            limit: '20',
             search: search
         });
         
@@ -141,9 +149,21 @@ async function loadContacts(search = '', page = 1) {
         const data = await response.json();
         
         if (data.success) {
-            allContacts = data.data;
+            if (append) {
+                // Append new contacts to existing list
+                allContacts = [...allContacts, ...data.data];
+            } else {
+                // Replace entire list (for new searches or initial load)
+                allContacts = data.data;
+                selectedContacts.clear(); // Clear selections when loading new list
+            }
+            
             currentPage = data.pagination.page;
+            totalPages = data.pagination.totalPages;
+            totalContacts = data.pagination.total;
+            
             renderContactsList(allContacts);
+            updateLoadMoreButton();
         } else {
             throw new Error(data.error || 'Failed to load contacts');
         }
@@ -159,7 +179,8 @@ async function loadContacts(search = '', page = 1) {
 }
 
 function renderContactsList(contacts) {
-    if (contacts.length === 0) {
+    if (contacts.length === 0 && currentPage === 1) {
+        // Show empty state only on first page
         contactsList.innerHTML = `
             <div class="text-center text-gray-500 py-8">
                 <p>No contacts found</p>
@@ -169,21 +190,81 @@ function renderContactsList(contacts) {
         return;
     }
     
-    contactsList.innerHTML = contacts.map(contact => `
-        <div class="flex items-center p-2 hover:bg-gray-50 rounded">
-            <input type="checkbox"
-                   id="contact-${contact.id}"
-                   value="${contact.id}"
-                   class="mr-3 contact-checkbox"
-                   ${selectedContacts.has(contact.id) ? 'checked' : ''}
-                   onchange="toggleContactSelection(${contact.id})">
-            <label for="contact-${contact.id}" class="flex-1 cursor-pointer">
-                <div class="font-medium text-gray-900">${contact.name || 'Unknown'}</div>
-                <div class="text-sm text-gray-500">${contact.phone_number}</div>
-                ${contact.email ? `<div class="text-xs text-gray-400">${contact.email}</div>` : ''}
-            </label>
-        </div>
-    `).join('');
+    // If appending, we need to add to existing HTML
+    if (currentPage > 1 && contactsList.children.length > 0) {
+        const newContactsHTML = contacts.slice(-20).map(contact => `
+            <div class="flex items-center p-2 hover:bg-gray-50 rounded">
+                <input type="checkbox"
+                       id="contact-${contact.id}"
+                       value="${contact.id}"
+                       class="mr-3 contact-checkbox"
+                       ${selectedContacts.has(contact.id) ? 'checked' : ''}
+                       onchange="toggleContactSelection(${contact.id})">
+                <label for="contact-${contact.id}" class="flex-1 cursor-pointer">
+                    <div class="font-medium text-gray-900">${contact.name || 'Unknown'}</div>
+                    <div class="text-sm text-gray-500">${contact.phone_number}</div>
+                    ${contact.email ? `<div class="text-xs text-gray-400">${contact.email}</div>` : ''}
+                </label>
+            </div>
+        `).join('');
+        
+        contactsList.insertAdjacentHTML('beforeend', newContactsHTML);
+    } else {
+        // Replace entire list
+        contactsList.innerHTML = contacts.map(contact => `
+            <div class="flex items-center p-2 hover:bg-gray-50 rounded">
+                <input type="checkbox"
+                       id="contact-${contact.id}"
+                       value="${contact.id}"
+                       class="mr-3 contact-checkbox"
+                       ${selectedContacts.has(contact.id) ? 'checked' : ''}
+                       onchange="toggleContactSelection(${contact.id})">
+                <label for="contact-${contact.id}" class="flex-1 cursor-pointer">
+                    <div class="font-medium text-gray-900">${contact.name || 'Unknown'}</div>
+                    <div class="text-sm text-gray-500">${contact.phone_number}</div>
+                    ${contact.email ? `<div class="text-xs text-gray-400">${contact.email}</div>` : ''}
+                </label>
+            </div>
+        `).join('');
+    }
+}
+
+// Update Load More button visibility and text
+function updateLoadMoreButton() {
+    const loadMoreContainer = document.getElementById('load-more-container');
+    const loadMoreBtn = document.getElementById('load-more-contacts');
+    const countInfo = document.getElementById('contacts-count-info');
+    
+    if (loadMoreContainer && loadMoreBtn && countInfo) {
+        if (currentPage < totalPages) {
+            loadMoreContainer.classList.remove('hidden');
+            loadMoreBtn.disabled = isLoadingMore;
+            loadMoreBtn.textContent = isLoadingMore ? 'Loading...' : 'Load More Contacts';
+            
+            const showingCount = allContacts.length;
+            countInfo.textContent = `Showing ${showingCount} of ${totalContacts} contacts`;
+        } else {
+            loadMoreContainer.classList.add('hidden');
+        }
+    }
+}
+
+// Load more contacts function
+async function loadMoreContacts() {
+    if (isLoadingMore || currentPage >= totalPages) return;
+    
+    isLoadingMore = true;
+    updateLoadMoreButton();
+    
+    try {
+        await loadContacts(currentSearch, currentPage + 1, true);
+    } catch (error) {
+        console.error('Error loading more contacts:', error);
+        showNotification('Failed to load more contacts', 'error');
+    } finally {
+        isLoadingMore = false;
+        updateLoadMoreButton();
+    }
 }
 
 function toggleContactSelection(contactId) {
@@ -264,7 +345,7 @@ async function importContacts() {
         }
 
         showNotification(`Imported ${data.imported} new contacts, updated ${data.updated}`, 'success');
-        loadContacts(); // Reload the contacts list
+        loadContacts(currentSearch, 1, false); // Reload the contacts list
         loadDashboardData(); // Update the count
     } catch (error) {
         console.error('Import error:', error);
@@ -294,9 +375,10 @@ async function importContacts() {
 function handleSearch(event) {
     clearTimeout(searchTimeout);
     const searchTerm = event.target.value;
+    currentSearch = searchTerm;
     
     searchTimeout = setTimeout(() => {
-        loadContacts(searchTerm, 1);
+        loadContacts(searchTerm, 1, false);
     }, 300);
 }
 
