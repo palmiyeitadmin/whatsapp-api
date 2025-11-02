@@ -838,6 +838,7 @@ function updateAuthContainer(authenticated) {
 // Modal functions for adding contacts
 function showAddContactModal() {
     const modal = document.getElementById('add-contact-modal');
+    modal.classList.add('show');
     modal.classList.remove('hidden');
     // Reset form
     document.getElementById('add-contact-form').reset();
@@ -847,6 +848,7 @@ function showAddContactModal() {
 
 function hideAddContactModal() {
     const modal = document.getElementById('add-contact-modal');
+    modal.classList.remove('show');
     modal.classList.add('hidden');
 }
 
