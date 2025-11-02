@@ -7,7 +7,14 @@ export const onRequestPost = createProtectedRoute(async function(context) {
     try {
         // Parse request body
         const requestData = await context.request.json();
-        const { name, phone_number, email } = requestData;
+        const {
+            name,
+            phone_number,
+            email,
+            telegram_id,
+            telegram_username,
+            preferred_provider
+        } = requestData;
         
         // Validate input
         if (!phone_number) {
@@ -71,24 +78,45 @@ export const onRequestPost = createProtectedRoute(async function(context) {
         // Insert new contact
         const insertQuery = `
             INSERT INTO contacts (
-                user_google_id, 
-                name, 
-                phone_number, 
+                user_google_id,
+                name,
+                phone_number,
                 email,
+                telegram_id,
+                telegram_username,
+                preferred_provider,
                 created_at,
                 updated_at
-            ) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
         `;
-        
+
         const result = await env.CF_INFOBIP_DB.prepare(insertQuery)
-            .bind(user.google_id, name || '', phone_number, email || '')
+            .bind(
+                user.google_id,
+                name || '',
+                phone_number,
+                email || '',
+                telegram_id || null,
+                telegram_username || null,
+                preferred_provider || 'whatsapp'
+            )
             .run();
         
         if (result.success) {
             // Get the newly created contact using the last inserted ID
             // D1 uses last_insert_rowid() function, we need to query differently
             const newContactQuery = `
-                SELECT id, name, phone_number, email, google_contact_id, created_at, updated_at
+                SELECT
+                    id,
+                    name,
+                    phone_number,
+                    email,
+                    telegram_id,
+                    telegram_username,
+                    preferred_provider,
+                    google_contact_id,
+                    created_at,
+                    updated_at
                 FROM contacts
                 WHERE user_google_id = ? AND phone_number = ?
                 ORDER BY created_at DESC

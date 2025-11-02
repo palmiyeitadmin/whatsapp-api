@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(CLOUDFLARE_ACCOUNT_ID=90557af92781dc3d402935390b03231b npx wrangler:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
