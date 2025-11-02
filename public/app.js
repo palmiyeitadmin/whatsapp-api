@@ -4,6 +4,15 @@
 let currentUser = null;
 let isAuthenticated = false;
 
+// Provider management
+let selectedProvider = 'whatsapp'; // Default provider
+
+// Character limits per provider
+const PROVIDER_LIMITS = {
+    whatsapp: 4096,
+    telegram: 4096
+};
+
 // DOM elements
 const loginSection = document.getElementById('login-section');
 const dashboardSection = document.getElementById('dashboard-section');
@@ -20,12 +29,19 @@ const importContactsBtn = document.getElementById('import-contacts-btn');
 // Message composition
 const messageContent = document.getElementById('message-content');
 const messageCount = document.getElementById('message-count');
-const messagePreview = document.getElementById('message-preview');
 const selectedCount = document.getElementById('selected-count');
 const selectedContactsDiv = document.getElementById('selected-contacts');
 const sendMessageBtnMain = document.getElementById('send-message-btn-main');
 const clearMessageBtn = document.getElementById('clear-message-btn');
 const sendStatus = document.getElementById('send-status');
+
+// Provider elements
+const providerRadios = document.querySelectorAll('input[name="provider"]');
+const previewProviderLabel = document.getElementById('preview-provider-label');
+const whatsappPreview = document.getElementById('whatsapp-preview');
+const telegramPreview = document.getElementById('telegram-preview');
+const messagePreviewWhatsApp = document.getElementById('message-preview-whatsapp');
+const messagePreviewTelegram = document.getElementById('message-preview-telegram');
 
 // Global state
 let allContacts = [];
@@ -65,6 +81,11 @@ function setupEventListeners() {
     selectAllContactsBtn?.addEventListener('click', selectAllContacts);
     deselectAllContactsBtn?.addEventListener('click', deselectAllContacts);
     contactsSearch?.addEventListener('input', handleSearch);
+    
+    // Provider change handlers
+    providerRadios.forEach(radio => {
+        radio.addEventListener('change', handleProviderChange);
+    });
     
     // Message composition
     messageContent?.addEventListener('input', handleMessageInput);
@@ -248,39 +269,77 @@ function handleSearch(event) {
     }, 300);
 }
 
+// Provider management functions
+function handleProviderChange(e) {
+    selectedProvider = e.target.value;
+
+    // Update preview label
+    const providerName = selectedProvider.charAt(0).toUpperCase() + selectedProvider.slice(1);
+    previewProviderLabel.textContent = `(${providerName})`;
+
+    // Toggle preview visibility
+    if (selectedProvider === 'whatsapp') {
+        whatsappPreview.classList.remove('hidden');
+        telegramPreview.classList.add('hidden');
+    } else {
+        whatsappPreview.classList.add('hidden');
+        telegramPreview.classList.remove('hidden');
+    }
+
+    // Re-render message preview for new provider
+    handleMessageInput();
+}
+
 // Message composition functions
 function handleMessageInput() {
     const content = messageContent.value;
     const length = content.length;
-    
+    const limit = PROVIDER_LIMITS[selectedProvider];
+
     // Update character count
-    messageCount.textContent = `${length} / 4096 characters`;
-    
+    messageCount.textContent = `${length} / ${limit} characters`;
+
     // Update character count color
-    if (length > 4096) {
+    if (length > limit) {
         messageCount.classList.add('text-red-500');
         messageCount.classList.remove('text-gray-500');
     } else {
         messageCount.classList.remove('text-red-500');
         messageCount.classList.add('text-gray-500');
     }
-    
-    // Update preview
+
+    // Update preview based on provider
+    const previewElement = selectedProvider === 'whatsapp'
+        ? messagePreviewWhatsApp
+        : messagePreviewTelegram;
+
     if (content.trim()) {
-        messagePreview.innerHTML = `<p class="whitespace-pre-wrap">${escapeHtml(content)}</p>`;
+        // Telegram supports HTML formatting, WhatsApp plain text
+        if (selectedProvider === 'telegram') {
+            previewElement.innerHTML = `<p class="whitespace-pre-wrap">${renderTelegramPreview(content)}</p>`;
+        } else {
+            previewElement.innerHTML = `<p class="whitespace-pre-wrap">${escapeHtml(content)}</p>`;
+        }
     } else {
-        messagePreview.innerHTML = '<p class="text-gray-500">Message preview will appear here...</p>';
+        previewElement.innerHTML = '<p class="text-gray-500">Message preview will appear here...</p>';
     }
-    
+
     // Update send button state
     updateSendButtonState();
+}
+
+function renderTelegramPreview(text) {
+    // Simple HTML rendering for Telegram (supports <b>, <i>, <code>, etc.)
+    // For now, just escape HTML but preserve line breaks
+    return escapeHtml(text);
 }
 
 function updateSendButtonState() {
     const hasMessage = messageContent.value.trim().length > 0;
     const hasRecipients = selectedContacts.size > 0;
-    const isValidLength = messageContent.value.length <= 4096;
-    
+    const limit = PROVIDER_LIMITS[selectedProvider];
+    const isValidLength = messageContent.value.length <= limit;
+
     sendMessageBtnMain.disabled = !(hasMessage && hasRecipients && isValidLength);
 }
 
@@ -301,8 +360,9 @@ async function sendMessage() {
         return;
     }
     
-    if (message.length > 4096) {
-        showNotification('Message is too long (max 4096 characters)', 'error');
+    const limit = PROVIDER_LIMITS[selectedProvider];
+    if (message.length > limit) {
+        showNotification(`Message is too long (max ${limit} characters)`, 'error');
         return;
     }
     
@@ -316,7 +376,8 @@ async function sendMessage() {
             method: 'POST',
             body: JSON.stringify({
                 message,
-                recipients
+                recipients,
+                provider: selectedProvider // ADD THIS LINE
             })
         });
         

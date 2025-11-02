@@ -1,5 +1,6 @@
-// WhatsApp message sending endpoint via Infobip
+// Multi-provider message sending endpoint
 import { createProtectedRoute } from '../../middleware/auth.js';
+import { sendMessageViaProvider, validateProviderContacts } from '../../lib/providerRouter.js';
 
 export const onRequestPost = createProtectedRoute(async function(context) {
     const { env, user } = context;
@@ -8,7 +9,18 @@ export const onRequestPost = createProtectedRoute(async function(context) {
         const body = await context.request.json();
         
         // Validate request body
-        const { message, recipients, campaignId } = body;
+        const { message, recipients, campaignId, provider = 'whatsapp' } = body;
+        
+        // Validate provider
+        if (!['whatsapp', 'telegram'].includes(provider)) {
+            return new Response(JSON.stringify({
+                success: false,
+                error: 'Invalid provider. Must be "whatsapp" or "telegram"'
+            }), {
+                status: 400,
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
         
         if (!message || !message.trim()) {
             return new Response(JSON.stringify({ 
@@ -28,10 +40,10 @@ export const onRequestPost = createProtectedRoute(async function(context) {
             });
         }
         
-        // Validate message length (WhatsApp limit is typically 4096 characters)
+        // Validate message length (both WhatsApp and Telegram limit is typically 4096 characters)
         if (message.length > 4096) {
-            return new Response(JSON.stringify({ 
-                error: 'Message is too long. Maximum 4096 characters allowed.' 
+            return new Response(JSON.stringify({
+                error: 'Message is too long. Maximum 4096 characters allowed.'
             }), {
                 status: 400,
                 headers: { 'Content-Type': 'application/json' },
@@ -43,11 +55,24 @@ export const onRequestPost = createProtectedRoute(async function(context) {
         const contacts = await getContactsByIds(contactIds, user.google_id, env);
         
         if (contacts.length === 0) {
-            return new Response(JSON.stringify({ 
-                error: 'No valid contacts found' 
+            return new Response(JSON.stringify({
+                error: 'No valid contacts found'
             }), {
                 status: 400,
                 headers: { 'Content-Type': 'application/json' },
+            });
+        }
+        
+        // Validate contacts have required provider fields
+        const providerValidation = validateProviderContacts(provider, contacts);
+        if (!providerValidation.valid) {
+            return new Response(JSON.stringify({
+                success: false,
+                error: `${providerValidation.invalidContacts.length} contacts missing ${provider} information`,
+                invalidContacts: providerValidation.invalidContacts
+            }), {
+                status: 400,
+                headers: { 'Content-Type': 'application/json' }
             });
         }
         
@@ -65,16 +90,30 @@ export const onRequestPost = createProtectedRoute(async function(context) {
             }
         }
         
-        // Send messages with rate limiting and batch processing
-        const sendResults = await sendWhatsAppMessages(
-            contacts, 
-            message, 
-            env.INFOBIP_API_KEY, 
-            env.INFOBIP_BASE_URL,
-            env.INFOBIP_WHATSAPP_SENDER,
+        // Send messages via selected provider
+        const sendResults = await sendMessageViaProvider(
+            provider,
+            contacts,
+            message,
+            env,
             user.google_id,
             campaign?.id
         );
+        
+        // Log messages in database
+        for (const result of sendResults) {
+            await logMessage(
+                user.google_id,
+                result.contactId,
+                campaign?.id,
+                message,
+                result.messageId || null,
+                result.success ? 'sent' : 'failed',
+                result.error || null,
+                provider,
+                env
+            );
+        }
         
         // Update campaign status if provided
         if (campaign) {
@@ -86,8 +125,8 @@ export const onRequestPost = createProtectedRoute(async function(context) {
             results: sendResults,
             summary: {
                 total: sendResults.length,
-                sent: sendResults.filter(r => r.status === 'sent').length,
-                failed: sendResults.filter(r => r.status === 'failed').length
+                sent: sendResults.filter(r => r.success).length,
+                failed: sendResults.filter(r => !r.success).length
             }
         }), {
             headers: { 'Content-Type': 'application/json' },
@@ -108,8 +147,8 @@ export const onRequestPost = createProtectedRoute(async function(context) {
 async function getContactsByIds(contactIds, userId, env) {
     const placeholders = contactIds.map(() => '?').join(',');
     const query = `
-        SELECT id, name, phone_number, email 
-        FROM contacts 
+        SELECT id, name, phone_number, email, telegram_id, telegram_username, preferred_provider
+        FROM contacts
         WHERE user_google_id = ? AND id IN (${placeholders})
     `;
     
@@ -138,155 +177,18 @@ async function updateCampaignStatus(campaignId, status, env) {
     `).bind(status, campaignId).run();
 }
 
-async function sendWhatsAppMessages(contacts, message, apiKey, baseUrl, sender, userId, campaignId = null) {
-    const results = [];
-    const batchSize = 10; // Process in batches of 10
-    const delayBetweenBatches = 1000; // 1 second delay between batches
-    
-    for (let i = 0; i < contacts.length; i += batchSize) {
-        const batch = contacts.slice(i, i + batchSize);
-        
-        const batchPromises = batch.map(async (contact) => {
-            try {
-                // Format phone number for WhatsApp (remove non-numeric characters, ensure country code)
-                const phoneNumber = formatPhoneNumber(contact.phone_number);
-                
-                if (!phoneNumber) {
-                    throw new Error('Invalid phone number');
-                }
-                
-                // Send message via Infobip API
-                const infobipResponse = await sendInfobipMessage(
-                    phoneNumber,
-                    message,
-                    apiKey,
-                    baseUrl,
-                    sender
-                );
-                
-                // Log message in database
-                await logMessage(
-                    userId,
-                    contact.id,
-                    campaignId,
-                    message,
-                    infobipResponse.messageId,
-                    'sent',
-                    null,
-                    env
-                );
-                
-                return {
-                    contactId: contact.id,
-                    phoneNumber,
-                    status: 'sent',
-                    messageId: infobipResponse.messageId,
-                    response: infobipResponse
-                };
-                
-            } catch (error) {
-                // Log failed message
-                await logMessage(
-                    userId,
-                    contact.id,
-                    campaignId,
-                    message,
-                    null,
-                    'failed',
-                    error.message,
-                    env
-                );
-                
-                return {
-                    contactId: contact.id,
-                    phoneNumber: contact.phone_number,
-                    status: 'failed',
-                    error: error.message
-                };
-            }
-        });
-        
-        const batchResults = await Promise.all(batchPromises);
-        results.push(...batchResults);
-        
-        // Add delay between batches to avoid rate limiting
-        if (i + batchSize < contacts.length) {
-            await new Promise(resolve => setTimeout(resolve, delayBetweenBatches));
-        }
-    }
-    
-    return results;
-}
-
-async function sendInfobipMessage(phoneNumber, message, apiKey, baseUrl, sender) {
-    const url = `${baseUrl}/whatsapp/1/message/text`;
-    
-    const payload = {
-        from: sender,
-        to: phoneNumber,
-        content: {
-            text: message
-        }
-    };
-    
-    const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-            'Authorization': `App ${apiKey}`,
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify(payload)
-    });
-    
-    if (!response.ok) {
-        const errorData = await response.text();
-        throw new Error(`Infobip API error: ${response.status} - ${errorData}`);
-    }
-    
-    const data = await response.json();
-    
-    return {
-        messageId: data.messageId || data.messages?.[0]?.messageId,
-        status: data.status || 'sent',
-        response: data
-    };
-}
-
-function formatPhoneNumber(phoneNumber) {
-    // Remove all non-numeric characters
-    let cleaned = phoneNumber.replace(/\D/g, '');
-    
-    // Remove leading zeros
-    cleaned = cleaned.replace(/^0+/, '');
-    
-    // Ensure it has country code (add default if missing)
-    if (cleaned.length === 10) {
-        // Assume US number if 10 digits
-        cleaned = '1' + cleaned;
-    } else if (cleaned.length < 10) {
-        return null; // Invalid number
-    }
-    
-    // Validate length (should be 11-15 digits for international numbers)
-    if (cleaned.length < 11 || cleaned.length > 15) {
-        return null;
-    }
-    
-    return cleaned;
-}
-
-async function logMessage(userId, contactId, campaignId, messageContent, messageId, status, errorMessage, env) {
+async function logMessage(userId, contactId, campaignId, messageContent, messageId, status, errorMessage, provider, env) {
     await env.CF_INFOBIP_DB.prepare(`
-        INSERT INTO message_logs 
-        (user_google_id, contact_id, campaign_id, message_content, infobip_message_id, status, error_message)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO message_logs
+        (user_google_id, contact_id, campaign_id, message_content, infobip_message_id, provider, status, error_message, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
     `).bind(
         userId,
         contactId,
         campaignId,
         messageContent,
         messageId,
+        provider,
         status,
         errorMessage
     ).run();

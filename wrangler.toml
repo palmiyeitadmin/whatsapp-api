@@ -20,9 +20,16 @@ database_id = "your-database-id-here"
 [vars]
 GOOGLE_CLIENT_ID = ""
 GOOGLE_CLIENT_SECRET = ""
+
+# WhatsApp Provider (Infobip)
 INFOBIP_API_KEY = ""
 INFOBIP_BASE_URL = "https://api.infobip.com"
 INFOBIP_WHATSAPP_SENDER = ""
+
+# Telegram Provider
+TELEGRAM_BOT_TOKEN = ""
+TELEGRAM_API_URL = "https://api.telegram.org"
+
 JWT_SECRET = "your-jwt-secret-here"
 
 # KV namespace for sessions (optional alternative to JWT)

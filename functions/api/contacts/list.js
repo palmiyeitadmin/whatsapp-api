@@ -23,13 +23,13 @@ export const onRequestGet = createProtectedRoute(async function(context) {
         const params = [user.google_id];
         
         if (search) {
-            whereClause += ' AND (name LIKE ? OR phone_number LIKE ? OR email LIKE ?)';
+            whereClause += ' AND (name LIKE ? OR phone_number LIKE ? OR email LIKE ? OR telegram_username LIKE ?)';
             const searchPattern = `%${search}%`;
-            params.push(searchPattern, searchPattern, searchPattern);
+            params.push(searchPattern, searchPattern, searchPattern, searchPattern);
         }
         
         // Build ORDER BY clause
-        const validSortFields = ['name', 'phone_number', 'email', 'created_at', 'updated_at'];
+        const validSortFields = ['name', 'phone_number', 'email', 'telegram_id', 'telegram_username', 'preferred_provider', 'created_at', 'updated_at'];
         const validSortOrders = ['asc', 'desc'];
         
         const validatedSortBy = validSortFields.includes(sortBy) ? sortBy : 'name';
@@ -45,8 +45,17 @@ export const onRequestGet = createProtectedRoute(async function(context) {
         
         // Get contacts with pagination
         const contactsQuery = `
-            SELECT id, name, phone_number, email, google_contact_id, created_at, updated_at
-            FROM contacts 
+            SELECT
+                id,
+                name,
+                phone_number,
+                email,
+                telegram_id,
+                telegram_username,
+                preferred_provider,
+                created_at,
+                updated_at
+            FROM contacts
             ${whereClause}
             ${orderClause}
             LIMIT ? OFFSET ?

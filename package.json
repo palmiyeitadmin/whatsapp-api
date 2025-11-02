@@ -4,7 +4,7 @@
   "description": "A serverless WhatsApp bulk messaging application running on Cloudflare Pages with Google Contacts synchronization and Infobip API integration",
   "main": "index.js",
   "scripts": {
-    "dev": "wrangler pages dev public --compatibility-date=2023-12-01",
+    "dev": "npx wrangler pages dev public --compatibility-date=2023-12-01",
     "deploy": "wrangler pages deploy public",
     "deploy:staging": "wrangler pages deploy public --env staging",
     "deploy:production": "wrangler pages deploy public --env production",
@@ -19,7 +19,8 @@
     "lint": "eslint functions/**/*.js public/**/*.js",
     "lint:fix": "eslint functions/**/*.js public/**/*.js --fix",
     "git:push": "bash scripts/deploy.sh",
-    "git:push:windows": "scripts/deploy.bat"
+    "git:push:windows": "scripts/deploy.bat",
+    "build": "echo 'No build required for this project'"
   },
   "keywords": [
     "cloudflare",

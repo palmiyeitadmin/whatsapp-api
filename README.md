@@ -1,6 +1,6 @@
 # CF-Infobip Broadcaster
 
-A serverless WhatsApp bulk messaging application running on Cloudflare Pages with Google Contacts synchronization and Infobip API integration.
+A serverless multi-platform messaging application running on Cloudflare Pages with Google Contacts synchronization and support for both WhatsApp and Telegram providers.
 
 ## 🚀 Repository
 
@@ -10,7 +10,7 @@ A serverless WhatsApp bulk messaging application running on Cloudflare Pages wit
 
 - 🔐 **Google OAuth authentication** - Secure user authentication with Google
 - 👥 **Google Contacts synchronization** - Automatic import from Google Contacts
-- 📱 **WhatsApp bulk messaging** - Send messages via Infobip API
+- 📱 **Multi-platform messaging** - Send messages via WhatsApp or Telegram
 - ⚡ **Serverless architecture** - Built on Cloudflare Pages
 - 🗄️ **D1 database** - Serverless SQLite database
 - 📊 **Analytics & reporting** - Comprehensive message tracking
@@ -77,10 +77,14 @@ Create a `.env` file with:
 GOOGLE_CLIENT_ID=your-google-client-id
 GOOGLE_CLIENT_SECRET=your-google-client-secret
 
-# Infobip WhatsApp
+# WhatsApp Provider (Infobip)
 INFOBIP_API_KEY=your-infobip-api-key
 INFOBIP_WHATSAPP_SENDER=your-whatsapp-sender
 INFOBIP_BASE_URL=https://api.infobip.com
+
+# Telegram Provider
+TELEGRAM_BOT_TOKEN=your-telegram-bot-token
+TELEGRAM_API_URL=https://api.telegram.org
 
 # Application
 JWT_SECRET=your-jwt-secret
@@ -123,6 +127,7 @@ npm run deploy:production
 - 🚀 [Production Deployment](docs/production-deployment.md) - Deployment guide
 - 🔐 [Google OAuth Setup](docs/google-oauth-setup.md) - OAuth configuration
 - 📱 [Infobip Setup](docs/infobip-setup.md) - WhatsApp API setup
+- 📱 [Telegram Setup](docs/telegram-setup.md) - Telegram Bot configuration
 
 ## 🛠️ Development Scripts
 
@@ -147,6 +152,7 @@ npm run deploy:production
 - Cloudflare account
 - Google Cloud account (for OAuth)
 - Infobip account (for WhatsApp)
+- Telegram account (for Telegram Bot)
 
 ## 📞 Support
 
@@ -161,4 +167,4 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
 
-**Built with ❤️ for efficient WhatsApp bulk messaging**
+**Built with ❤️ for efficient multi-platform bulk messaging**
