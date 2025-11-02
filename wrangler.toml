@@ -1,5 +1,7 @@
 name = "cf-infobip-broadcaster"
 compatibility_date = "2023-12-01"
+account_id = "90557af92781dc3d402935390b03231b"
+pages_build_output_dir = "public"
 
 [env.production]
 name = "cf-infobip-broadcaster"
