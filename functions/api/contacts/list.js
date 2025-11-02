@@ -2,7 +2,9 @@
 import { createProtectedRoute } from '../../middleware/auth.js';
 
 export const onRequestGet = createProtectedRoute(async function(context) {
-    const { env, user } = context;
+    const { env } = context;
+    // TEMPORARY: Use test user for development
+    const user = context.user || { google_id: 'test-user' };
     const url = new URL(context.request.url);
     
     try {
