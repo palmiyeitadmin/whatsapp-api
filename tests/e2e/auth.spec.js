@@ -77,7 +77,7 @@ test.describe('Authentication Flow', () => {
       });
     });
 
-    await page.route('/functions/auth/logout', async route => {
+    await page.route('/auth/logout', async route => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',

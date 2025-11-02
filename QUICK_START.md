@@ -60,7 +60,7 @@ npm run dev
 2. Create a new project or select existing
 3. Enable Google People API
 4. Create OAuth 2.0 Client ID
-5. Add redirect URI: `http://localhost:8788/functions/auth/google/callback`
+5. Add redirect URI: `http://localhost:8788/auth/google/callback`
 6. Copy Client ID and Client Secret
 
 ### Infobip Setup
@@ -153,7 +153,7 @@ database_id = "your-actual-database-id"
 **Problem**: Google OAuth redirect fails
 
 **Solution**: Ensure redirect URI matches exactly:
-- In Google Console: `http://localhost:8788/functions/auth/google/callback`
+- In Google Console: `http://localhost:8788/auth/google/callback`
 - No trailing slashes
 - Exact protocol (http vs https)
 

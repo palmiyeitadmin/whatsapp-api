@@ -25,14 +25,6 @@ const contactsSearch = document.getElementById('contacts-search');
 const selectAllContactsBtn = document.getElementById('select-all-contacts');
 const deselectAllContactsBtn = document.getElementById('deselect-all-contacts');
 const importContactsBtn = document.getElementById('import-contacts-btn');
-const addContactBtn = document.getElementById('add-contact-btn');
-const addContactModal = document.getElementById('add-contact-modal');
-const closeAddContactModal = document.getElementById('close-add-contact-modal');
-const cancelAddContact = document.getElementById('cancel-add-contact');
-const addContactForm = document.getElementById('add-contact-form');
-const contactProviderRadios = document.querySelectorAll('input[name="contact-provider"]');
-const whatsappFields = document.getElementById('whatsapp-fields');
-const telegramFields = document.getElementById('telegram-fields');
 
 // Message composition
 const messageContent = document.getElementById('message-content');
@@ -321,11 +313,6 @@ function handleMessageInput() {
         ? messagePreviewWhatsApp
         : messagePreviewTelegram;
 
-    // Update time
-    const now = new Date();
-    const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
-    document.getElementById('whatsapp-time').textContent = timeString;
-    document.getElementById('telegram-time').textContent = timeString;
 
     if (content.trim()) {
         // Telegram supports HTML formatting, WhatsApp plain text
@@ -462,13 +449,13 @@ function updateAuthContainer(authenticated) {
 // Initiate Google OAuth
 function initiateGoogleAuth() {
     // Redirect to Google OAuth endpoint
-    window.location.href = '/functions/auth/google';
+    window.location.href = '/auth/google';
 }
 
 // Logout function
 async function logout() {
     try {
-        const response = await fetch('/functions/auth/logout', {
+        const response = await fetch('/auth/logout', {
             method: 'POST',
             credentials: 'include'
         });
@@ -622,114 +609,6 @@ function formatDate(dateString) {
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
 }
 
-// ============================================
-// ADD CONTACT MODAL FUNCTIONALITY
-// ============================================
-
-// Show/Hide modal
-if (addContactBtn) {
-    addContactBtn.addEventListener('click', () => {
-        addContactModal.classList.remove('hidden');
-    });
-}
-
-if (closeAddContactModal) {
-    closeAddContactModal.addEventListener('click', () => {
-        addContactModal.classList.add('hidden');
-        addContactForm.reset();
-    });
-}
-
-if (cancelAddContact) {
-    cancelAddContact.addEventListener('click', () => {
-        addContactModal.classList.add('hidden');
-        addContactForm.reset();
-    });
-}
-
-// Toggle fields based on provider selection
-contactProviderRadios.forEach(radio => {
-    radio.addEventListener('change', (e) => {
-        if (e.target.value === 'whatsapp') {
-            whatsappFields.classList.remove('hidden');
-            telegramFields.classList.add('hidden');
-            // Make phone required, telegram fields optional
-            document.getElementById('contact-phone').required = true;
-            document.getElementById('contact-telegram-id').required = false;
-        } else {
-            whatsappFields.classList.add('hidden');
-            telegramFields.classList.remove('hidden');
-            // Make telegram ID required, phone optional
-            document.getElementById('contact-phone').required = false;
-            document.getElementById('contact-telegram-id').required = true;
-        }
-    });
-});
-
-// Handle form submission
-if (addContactForm) {
-    addContactForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        const name = document.getElementById('contact-name').value.trim();
-        const email = document.getElementById('contact-email').value.trim();
-        const provider = document.querySelector('input[name="contact-provider"]:checked').value;
-        const phone = document.getElementById('contact-phone').value.trim();
-        const telegramId = document.getElementById('contact-telegram-id').value.trim();
-        const telegramUsername = document.getElementById('contact-telegram-username').value.trim();
-
-        // Build contact data
-        const contactData = {
-            name,
-            email: email || null,
-            preferred_provider: provider
-        };
-
-        if (provider === 'whatsapp') {
-            if (!phone) {
-                showNotification('Please enter a phone number for WhatsApp', 'error');
-                return;
-            }
-            contactData.phone_number = phone;
-        } else {
-            if (!telegramId) {
-                showNotification('Please enter a Telegram Chat ID', 'error');
-                return;
-            }
-            // For Telegram-only contacts, use dummy phone number
-            contactData.phone_number = '+0000000000';
-            contactData.telegram_id = telegramId;
-            contactData.telegram_username = telegramUsername || null;
-        }
-
-        try {
-            const response = await authenticatedFetch('/api/contacts/create', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(contactData)
-            });
-
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.error || 'Failed to add contact');
-            }
-
-            const result = await response.json();
-            showNotification('Contact added successfully!', 'success');
-
-            // Close modal and reset form
-            addContactModal.classList.add('hidden');
-            addContactForm.reset();
-
-            // Reload contacts list
-            await loadContacts();
-
-        } catch (error) {
-            console.error('Add contact error:', error);
-            showNotification(error.message || 'Failed to add contact', 'error');
-        }
-    });
-}
 
 // Export functions for use in other scripts
 window.app = {

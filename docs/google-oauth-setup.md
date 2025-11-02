@@ -46,8 +46,8 @@ This guide will walk you through setting up Google OAuth for the CF-Infobip Broa
 3. Select **Web application** as the application type
 4. Give it a name (e.g., "CF-Infobip Broadcaster Web")
 5. Add the following authorized redirect URIs:
-   - `https://your-project.pages.dev/functions/auth/google/callback`
-   - `http://localhost:8788/functions/auth/google/callback` (for local development)
+   - `https://your-project.pages.dev/auth/google/callback`
+   - `http://localhost:8788/auth/google/callback` (for local development)
 6. Click **Create**
 7. Copy the **Client ID** and **Client Secret** - you'll need these for your application
 

@@ -136,9 +136,9 @@ cf-infobip-broadcaster/
 ### RESTful Endpoints
 ```
 Authentication:
-  POST /functions/auth/google          # OAuth initiation
-  GET  /functions/auth/google/callback # OAuth callback
-  POST /functions/auth/logout         # Logout
+  POST /auth/google          # OAuth initiation
+  GET  /auth/google/callback # OAuth callback
+  POST /auth/logout         # Logout
   GET  /api/auth/status             # Auth status
 
 Contacts:

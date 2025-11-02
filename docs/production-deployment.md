@@ -107,7 +107,7 @@ curl https://your-domain.com/api/health
 curl -f https://your-domain.com/api/health || echo "Health check failed"
 
 # Test authentication
-curl -X POST https://your-domain.com/functions/auth/logout \
+curl -X POST https://your-domain.com/auth/logout \
   -H "Content-Type: application/json" \
   -d '{}'
 

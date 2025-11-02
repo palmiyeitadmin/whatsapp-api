@@ -38,9 +38,9 @@ CF-Infobip Broadcaster is a serverless WhatsApp bulk messaging application built
 ### API Endpoints
 
 #### Authentication
-- `/functions/auth/google` - Initiate Google OAuth
-- `/functions/auth/google/callback` - OAuth callback handler
-- `/functions/auth/logout` - Logout endpoint
+- `/auth/google` - Initiate Google OAuth
+- `/auth/google/callback` - OAuth callback handler
+- `/auth/logout` - Logout endpoint
 - `/api/auth/status` - Check authentication status
 
 #### Dashboard Data
