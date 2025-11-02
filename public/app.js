@@ -268,7 +268,26 @@ async function importContacts() {
         loadDashboardData(); // Update the count
     } catch (error) {
         console.error('Import error:', error);
-        showNotification(`Import failed: ${error.message}`, 'error');
+        
+        // Check if it's a refresh token issue
+        if (error.message.includes('refresh token') || error.message.includes('re-authenticate')) {
+            showNotification('Please sign out and sign in again with Google to grant contacts access permission.', 'error');
+            // Add a button to sign out
+            const logoutBtn = document.createElement('button');
+            logoutBtn.textContent = 'Sign Out';
+            logoutBtn.className = 'mt-2 bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded';
+            logoutBtn.onclick = logout;
+            
+            // Add button to notification
+            setTimeout(() => {
+                const notification = document.querySelector('.notification');
+                if (notification) {
+                    notification.appendChild(logoutBtn);
+                }
+            }, 100);
+        } else {
+            showNotification(`Import failed: ${error.message}`, 'error');
+        }
     }
 }
 

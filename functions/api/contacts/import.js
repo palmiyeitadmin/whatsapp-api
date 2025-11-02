@@ -19,7 +19,8 @@ export const onRequestPost = createProtectedRoute(async function(context) {
         // Check if user has refresh token
         if (!user.google_refresh_token) {
             return new Response(JSON.stringify({
-                error: 'No refresh token available. Please re-authenticate with Google.'
+                error: 'No refresh token available. Please sign out and sign in again with Google to grant the necessary permissions.',
+                details: 'Your account is missing the Google refresh token needed to access your contacts. This happens when you initially signed in without granting the full permissions or if the token was revoked.'
             }), {
                 status: 400,
                 headers: { 'Content-Type': 'application/json' },
